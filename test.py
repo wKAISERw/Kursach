@@ -11,15 +11,19 @@ from datetime import datetime
 from collections import Counter
 import pickle
 
-class Product:
-    def __init__(self, name, quantity, expiration_date):
+class Food:
+    def __init__(self, name):
         self._name = name
-        self._quantity = quantity
-        self._expiration_date = expiration_date
 
     @property
     def name(self):
         return self._name
+
+class Product(Food):
+    def __init__(self, name, quantity, expiration_date):
+        super().__init__(name)
+        self._quantity = quantity
+        self._expiration_date = expiration_date
 
     @property
     def quantity(self):
@@ -36,18 +40,16 @@ class Product:
     def check_expiration(self):
         return self._expiration_date > datetime.now()
 
-class Dish:
-    def __init__(self, name, ingredients):
-        self._name = name
-        self._ingredients = ingredients
+class Dish(Food):
+    def __init__(self, name):
+        super().__init__(name)
+        self._ingredients = []
 
-    @property
-    def name(self):
-        return self._name
+    def add_ingredient(self, ingredient):
+        self._ingredients.append(ingredient)
 
-    @property
-    def ingredients(self):
-        return self._ingredients
+    def remove_ingredient(self, ingredient):
+        self._ingredients.remove(ingredient)
 
 class Refrigerator:
     def __init__(self):
@@ -58,15 +60,6 @@ class Refrigerator:
 
     def remove_food(self, food):
         self._foods.remove(food)
-
-    def check_availability(self, food_name):
-        for food in self._foods:
-            if food.name == food_name:
-                if isinstance(food, Product):
-                    return food.quantity > 0
-                else:
-                    return True
-        return False
 
 class Statistics:
     def __init__(self, refrigerator):
@@ -181,7 +174,68 @@ class Ui_MainWindow(object):
             if item_type == "Product":
                 self.add_product()
             else:
-                self.add_dish()
+                if self.refrigerator._foods and any(isinstance(food, Product) for food in self.refrigerator._foods):
+                    self.add_dish()
+                else:
+                    QtWidgets.QMessageBox.warning(
+                        self.centralwidget, "Warning", "You need to add products before creating a dish.")
+
+    def add_dish(self):
+        dish_name, ok = QtWidgets.QInputDialog.getText(
+            self.centralwidget, "Add Dish", "Enter dish name:")
+        if ok and dish_name:
+            ingredients = [food for food in self.refrigerator._foods if isinstance(food, Product)]
+            if ingredients:
+                ingredient_dialog = QtWidgets.QDialog()
+                ingredient_dialog.setWindowTitle("Select Ingredients")
+                ingredient_layout = QtWidgets.QVBoxLayout()
+
+                ingredient_quantity_inputs = {}
+                for ingredient in ingredients:
+                    checkbox = QtWidgets.QCheckBox(ingredient.name)
+                    ingredient_layout.addWidget(checkbox)
+
+                    quantity_label = QtWidgets.QLabel("Quantity:")
+                    quantity_input = QtWidgets.QSpinBox()
+                    quantity_input.setMinimum(1)
+                    quantity_input.setMaximum(1000)
+                    ingredient_layout.addWidget(quantity_label)
+                    ingredient_layout.addWidget(quantity_input)
+
+                    ingredient_quantity_inputs[ingredient] = quantity_input
+
+                add_button = QtWidgets.QPushButton("Add Dish")
+                add_button.clicked.connect(lambda: self.add_selected_dish(dish_name, ingredient_quantity_inputs))
+                ingredient_layout.addWidget(add_button)
+                ingredient_dialog.setLayout(ingredient_layout)
+
+                if ingredient_dialog.exec_():
+                    selected_ingredients = [ingredient for ingredient, quantity_input in
+                                            ingredient_quantity_inputs.items() if quantity_input.value() > 0]
+                    if selected_ingredients:
+                        new_dish = Dish(dish_name)
+                        for ingredient in selected_ingredients:
+                            new_dish.add_ingredient(ingredient)
+
+                        self.refrigerator.add_food(new_dish)
+                        self.update_dish_list()
+
+                        for ingredient in selected_ingredients:
+                            ingredient.quantity -= 1
+                            if ingredient.quantity == 0:
+                                self.refrigerator.remove_food(ingredient)
+                        self.update_product_list()
+
+                        QtWidgets.QMessageBox.information(
+                            self.centralwidget, "Success", f"{dish_name} added to the refrigerator.")
+                    else:
+                        QtWidgets.QMessageBox.warning(
+                            self.centralwidget, "Warning",
+                            "You need to select at least one ingredient to create a dish.")
+            else:
+                QtWidgets.QMessageBox.warning(
+                    self.centralwidget, "Warning", "You need to add products before creating a dish.")
+
     def add_product(self):
         product_name, ok = QtWidgets.QInputDialog.getText(
             self.centralwidget, "Add Product", "Enter product name:")
@@ -206,40 +260,7 @@ class Ui_MainWindow(object):
                         QtWidgets.QMessageBox.warning(
                             self.centralwidget, "Помилка", "Невірний формат дати закінчення терміну придатності.")
 
-    def add_dish(self):
-        dish_name, ok = QtWidgets.QInputDialog.getText(
-            self.centralwidget, "Add Dish", "Enter dish name:")
-        if ok and dish_name:
-            ingredients = []
-            for food in self.refrigerator._foods:
-                if isinstance(food, Product):
-                    ingredients.append(food)
 
-            ingredient_dialog = QtWidgets.QDialog()
-            ingredient_dialog.setWindowTitle("Select Ingredients")
-            ingredient_layout = QtWidgets.QVBoxLayout()
-
-            # Create checkboxes for each ingredient
-            ingredient_quantity_inputs = {}
-            for ingredient in ingredients:
-                checkbox = QtWidgets.QCheckBox(ingredient.name)
-                ingredient_layout.addWidget(checkbox)
-
-                quantity_label = QtWidgets.QLabel("Quantity:")
-                quantity_input = QtWidgets.QSpinBox()
-                quantity_input.setMinimum(1)
-                quantity_input.setMaximum(1000)
-                ingredient_layout.addWidget(quantity_label)
-                ingredient_layout.addWidget(quantity_input)
-
-                ingredient_quantity_inputs[ingredient] = quantity_input
-
-            add_button = QtWidgets.QPushButton("Add Dish")
-            add_button.clicked.connect(lambda: self.add_selected_dish(dish_name, ingredient_quantity_inputs))
-            ingredient_layout.addWidget(add_button)
-            ingredient_dialog.setLayout(ingredient_layout)
-
-            ingredient_dialog.exec_()
 
     def add_selected_dish(self, dish_name, ingredient_quantity_inputs):
         selected_ingredients = []
@@ -247,7 +268,10 @@ class Ui_MainWindow(object):
             if quantity_input.value() > 0:
                 selected_ingredients.extend([ingredient] * quantity_input.value())
 
-        new_dish = Dish(dish_name, selected_ingredients)
+        new_dish = Dish(dish_name)
+        for ingredient in selected_ingredients:
+            new_dish.add_ingredient(ingredient)
+
         self.refrigerator.add_food(new_dish)
         self.update_dish_list()
 
