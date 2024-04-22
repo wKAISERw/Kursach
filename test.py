@@ -40,6 +40,9 @@ class Product(Food):
     def check_expiration(self):
         return self._expiration_date > datetime.now()
 
+    def is_expired(self):
+        return self._expiration_date < datetime.now().date()
+
 class Dish(Food):
     def __init__(self, name):
         super().__init__(name)
@@ -92,6 +95,8 @@ class Ui_MainWindow(object):
         self.statistics = Statistics(self.refrigerator)
         self.products_model = QtGui.QStandardItemModel()
         self.dishes_model = QtGui.QStandardItemModel()
+        self.selected_product_index = None
+        self.selected_dish_index = None
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -121,18 +126,15 @@ class Ui_MainWindow(object):
         self.pushButtonEdit.setGeometry(QtCore.QRect(720, 10, 93, 28))
         self.pushButtonEdit.setObjectName("pushButtonEdit")
         self.pushButtonEdit.clicked.connect(self.edit_product_or_dish)
-        self.pushButtonRemoveProduct = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButtonRemoveProduct.setGeometry(QtCore.QRect(40, 520, 181, 51))
-        self.pushButtonRemoveProduct.setStyleSheet("font-size: 16pt;\n"
-                                                  "")
-        self.pushButtonRemoveProduct.setObjectName("pushButtonRemoveProduct")
-        self.pushButtonRemoveProduct.clicked.connect(self.remove_product)
-        self.pushButtonRemoveDish = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButtonRemoveDish.setGeometry(QtCore.QRect(690, 160, 181, 51))
-        self.pushButtonRemoveDish.setStyleSheet("font-size: 16pt;\n"
-                                               "")
-        self.pushButtonRemoveDish.setObjectName("pushButtonRemoveDish")
-        self.pushButtonRemoveDish.clicked.connect(self.remove_dish)
+
+        self.pushButtonRemove = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButtonRemove.setGeometry(QtCore.QRect(40, 520, 181, 51))
+        self.pushButtonRemove.setStyleSheet("font-size: 16pt;")
+        self.pushButtonRemove.setObjectName("pushButtonRemove")
+        self.pushButtonRemove.setText("Видалити")
+        self.pushButtonRemove.clicked.connect(self.remove_item)
+
+
         self.labelStatistic = QtWidgets.QLabel(self.centralwidget)
         self.labelStatistic.setGeometry(QtCore.QRect(970, 70, 351, 211))
         self.labelStatistic.setObjectName("labelStatistic")
@@ -146,13 +148,32 @@ class Ui_MainWindow(object):
         self.listViewDish.setGeometry(QtCore.QRect(690, 230, 621, 461))
         self.listViewDish.setObjectName("listViewDish")
         self.listViewDish.setModel(self.dishes_model)
+
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-
+        self.listViewProducts.clicked.connect(self.handle_product_selection)
+        self.listViewDish.clicked.connect(self.handle_dish_selection)
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def handle_product_selection(self, index):
+        if self.selected_product_index == index.row():
+            self.selected_product_index = None
+            self.listViewProducts.clearSelection()
+        else:
+            self.selected_product_index = index.row()
+            self.selected_dish_index = None
+
+    def handle_dish_selection(self, index):
+        if self.selected_dish_index == index.row():
+            self.selected_dish_index = None
+            self.listViewDish.clearSelection()
+        else:
+            self.selected_product_index = None
+            self.selected_dish_index = index.row()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -162,8 +183,7 @@ class Ui_MainWindow(object):
         self.pushButtonLoad.setText(_translate("MainWindow", "Завантажити"))
 
         self.pushButtonEdit.setText(_translate("MainWindow", "Редагувати"))
-        self.pushButtonRemoveProduct.setText(_translate("MainWindow", "Видалити продукт"))
-        self.pushButtonRemoveDish.setText(_translate("MainWindow", "Видалити страву"))
+
         self.labelStatistic.setText(_translate("MainWindow", "TextLabel"))
         self.pushButtonShowStatistics.setText(_translate("MainWindow", "Показати статистику"))
 
@@ -198,43 +218,45 @@ class Ui_MainWindow(object):
                     quantity_label = QtWidgets.QLabel("Quantity:")
                     quantity_input = QtWidgets.QSpinBox()
                     quantity_input.setMinimum(1)
-                    quantity_input.setMaximum(1000)
+                    quantity_input.setMaximum(ingredient.quantity)
                     ingredient_layout.addWidget(quantity_label)
                     ingredient_layout.addWidget(quantity_input)
 
-                    ingredient_quantity_inputs[ingredient] = quantity_input
+                    ingredient_quantity_inputs[ingredient] = (checkbox, quantity_input)
 
                 add_button = QtWidgets.QPushButton("Add Dish")
-                add_button.clicked.connect(lambda: self.add_selected_dish(dish_name, ingredient_quantity_inputs))
+                add_button.clicked.connect(lambda: self.create_dish(dish_name, ingredient_quantity_inputs))
                 ingredient_layout.addWidget(add_button)
                 ingredient_dialog.setLayout(ingredient_layout)
 
-                if ingredient_dialog.exec_():
-                    selected_ingredients = [ingredient for ingredient, quantity_input in
-                                            ingredient_quantity_inputs.items() if quantity_input.value() > 0]
-                    if selected_ingredients:
-                        new_dish = Dish(dish_name)
-                        for ingredient in selected_ingredients:
-                            new_dish.add_ingredient(ingredient)
-
-                        self.refrigerator.add_food(new_dish)
-                        self.update_dish_list()
-
-                        for ingredient in selected_ingredients:
-                            ingredient.quantity -= 1
-                            if ingredient.quantity == 0:
-                                self.refrigerator.remove_food(ingredient)
-                        self.update_product_list()
-
-                        QtWidgets.QMessageBox.information(
-                            self.centralwidget, "Success", f"{dish_name} added to the refrigerator.")
-                    else:
-                        QtWidgets.QMessageBox.warning(
-                            self.centralwidget, "Warning",
-                            "You need to select at least one ingredient to create a dish.")
+                ingredient_dialog.exec_()
             else:
                 QtWidgets.QMessageBox.warning(
                     self.centralwidget, "Warning", "You need to add products before creating a dish.")
+
+    def create_dish(self, dish_name, ingredient_quantity_inputs):
+        selected_ingredients = [(ingredient, quantity_input.value()) for ingredient, (checkbox, quantity_input) in
+                                ingredient_quantity_inputs.items() if checkbox.isChecked()]
+        if selected_ingredients:
+            new_dish = Dish(dish_name)
+            for ingredient, quantity in selected_ingredients:
+                for _ in range(quantity):
+                    new_dish.add_ingredient(ingredient)
+
+            self.refrigerator.add_food(new_dish)
+            self.update_dish_list()
+
+            for ingredient, quantity in selected_ingredients:
+                ingredient.quantity -= quantity
+                if ingredient.quantity == 0:
+                    self.refrigerator.remove_food(ingredient)
+            self.update_product_list()
+
+            QtWidgets.QMessageBox.information(
+                self.centralwidget, "Success", f"{dish_name} added to the refrigerator.")
+        else:
+            QtWidgets.QMessageBox.warning(
+                self.centralwidget, "Warning", "You need to select at least one ingredient to create a dish.")
 
     def add_product(self):
         product_name, ok = QtWidgets.QInputDialog.getText(
@@ -248,18 +270,20 @@ class Ui_MainWindow(object):
                     self.centralwidget, "Додати продукт", "Введіть дату закінчення терміну придатності (YYYY-MM-DD):")
                 if ok and product_expiration_date:
                     try:
-                        expiration_date = datetime.strptime(
-                            product_expiration_date, "%Y-%m-%d")
-                        new_product = Product(
-                            product_name, product_quantity, expiration_date)
-                        self.refrigerator.add_food(new_product)
-                        self.update_product_list()
-                        QtWidgets.QMessageBox.information(
-                            self.centralwidget, "Успіх", f"{product_name} додано до холодильника.")
+                        expiration_date = datetime.strptime(product_expiration_date, "%Y-%m-%d").date()
+                        if expiration_date < datetime.now().date():
+                            QtWidgets.QMessageBox.warning(
+                                self.centralwidget, "Помилка",
+                                "Термін придатності продукту вже закінчився. Продукт не може бути доданий.")
+                        else:
+                            new_product = Product(product_name, product_quantity, expiration_date)
+                            self.refrigerator.add_food(new_product)
+                            self.update_product_list()
+                            QtWidgets.QMessageBox.information(
+                                self.centralwidget, "Успіх", f"{product_name} додано до холодильника.")
                     except ValueError:
                         QtWidgets.QMessageBox.warning(
                             self.centralwidget, "Помилка", "Невірний формат дати закінчення терміну придатності.")
-
 
 
     def add_selected_dish(self, dish_name, ingredient_quantity_inputs):
@@ -300,19 +324,24 @@ class Ui_MainWindow(object):
                             "Введіть нову дату закінчення терміну придатності (YYYY-MM-DD):")
                         if ok and new_expiration_date:
                             try:
-                                new_expiration_date = datetime.strptime(
-                                    new_expiration_date, "%Y-%m-%d")
-                                selected_food._name = new_name
-                                selected_food._quantity = new_quantity
-                                selected_food._expiration_date = new_expiration_date
-                                self.update_product_list()
-                                QtWidgets.QMessageBox.information(
-                                    self.centralwidget, "Успіх",
-                                    f"Продукт '{selected_food.name}' успішно відредаговано.")
+                                new_expiration_date = datetime.strptime(new_expiration_date, "%Y-%m-%d").date()
+                                if new_expiration_date < datetime.now().date():
+                                    QtWidgets.QMessageBox.warning(
+                                        self.centralwidget, "Помилка",
+                                        "Термін придатності продукту вже закінчився. Продукт не може бути відредагований.")
+                                else:
+                                    selected_food._name = new_name
+                                    selected_food._quantity = new_quantity
+                                    selected_food._expiration_date = new_expiration_date
+                                    self.update_product_list()
+                                    QtWidgets.QMessageBox.information(
+                                        self.centralwidget, "Успіх",
+                                        f"Продукт '{selected_food.name}' успішно відредаговано.")
                             except ValueError:
                                 QtWidgets.QMessageBox.warning(
                                     self.centralwidget, "Помилка",
                                     "Невірний формат дати закінчення терміну придатності.")
+        # Решта коду для редагування страв
         else:
             selected_index = self.listViewDish.currentIndex().row()
             if selected_index >= 0:
@@ -343,21 +372,19 @@ class Ui_MainWindow(object):
                         QtWidgets.QMessageBox.information(
                             self.centralwidget, "Успіх", f"Страва '{selected_dish.name}' успішно відредагована.")
 
-    def remove_product(self):
-        selected_index = self.listViewProducts.currentIndex().row()
-        if selected_index >= 0:
-            selected_product = self.refrigerator._foods[selected_index]
+    def remove_item(self):
+        if self.selected_product_index is not None:
+            selected_product = self.refrigerator._foods[self.selected_product_index]
             self.refrigerator.remove_food(selected_product)
             self.update_product_list()
+            self.selected_product_index = None
             QtWidgets.QMessageBox.information(
                 self.centralwidget, "Успіх", f"Продукт '{selected_product.name}' успішно видалено.")
-
-    def remove_dish(self):
-        selected_index = self.listViewDish.currentIndex().row()
-        if selected_index >= 0:
-            selected_dish = self.refrigerator._foods[selected_index]
+        elif self.selected_dish_index is not None:
+            selected_dish = self.refrigerator._foods[self.selected_dish_index]
             self.refrigerator.remove_food(selected_dish)
             self.update_dish_list()
+            self.selected_dish_index = None
             QtWidgets.QMessageBox.information(
                 self.centralwidget, "Успіх", f"Страва '{selected_dish.name}' успішно видалена.")
 
@@ -383,7 +410,8 @@ class Ui_MainWindow(object):
         self.products_model.clear()
         for food in self.refrigerator._foods:
             if isinstance(food, Product):
-                item = QtGui.QStandardItem(f"{food.name} ({food.quantity})")
+                expiration_date_str = food.expiration_date.strftime('%Y-%m-%d')
+                item = QtGui.QStandardItem(f"{food.name} ({food.quantity}) - Expires on {expiration_date_str}")
                 self.products_model.appendRow(item)
 
     def update_dish_list(self):
