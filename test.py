@@ -151,6 +151,40 @@ class Statistics:
             for product in expired_foods:
                 recommendations.append(f"- {product.name} (Expiration date: {product.expiration_date.strftime('%Y-%m-%d')})")
         return recommendations
+class StatisticsDialog(QtWidgets.QDialog):
+    def __init__(self, refrigerator, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Статистика")
+        self.setModal(True)
+
+        layout = QtWidgets.QVBoxLayout()
+
+        statistics = Statistics(refrigerator)
+        total_foods, total_dishes, low_stock_products, expired_foods = statistics.analyze_foods()
+
+        info_text = f"Всього продуктів: {total_foods}\n"
+        info_text += f"Всього страв: {total_dishes}\n\n"
+
+        if low_stock_products:
+            info_text += "Необхідно поповнити запаси таких продуктів:\n"
+            for product_name in low_stock_products:
+                info_text += f"- {product_name}\n"
+            info_text += "\n"
+
+        if expired_foods:
+            info_text += "Такі продукти прострочені або закінчується термін придатності:\n"
+            for product in expired_foods:
+                info_text += f"- {product.name} (Термін придатності: {product.expiration_date.strftime('%Y-%m-%d')})\n"
+
+        info_label = QtWidgets.QLabel(info_text)
+        info_label.setWordWrap(True)
+        layout.addWidget(info_label)
+
+        close_button = QtWidgets.QPushButton("Закрити")
+        close_button.clicked.connect(self.accept)
+        layout.addWidget(close_button)
+
+        self.setLayout(layout)
 
 class Ui_MainWindow(object):
     def __init__(self):
@@ -162,60 +196,85 @@ class Ui_MainWindow(object):
         self.selected_dish_index = None
 
     def setupUi(self, MainWindow):
-
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        self.listViewProducts = QtWidgets.QListView(self.centralwidget)
-        self.listViewProducts.setGeometry(QtCore.QRect(40, 70, 581, 451))
-        self.listViewProducts.setObjectName("listViewProducts")
-        self.pushButtonAddItem = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButtonAddItem.setGeometry(QtCore.QRect(510, 10, 131, 41))
-        self.pushButtonAddItem.setStyleSheet("font-size: 8pt;\n"
+            MainWindow.setObjectName("MainWindow")
+            MainWindow.resize(1332, 726)
+            self.centralwidget = QtWidgets.QWidget(MainWindow)
+            self.centralwidget.setObjectName("centralwidget")
+            self.listViewProducts = QtWidgets.QListView(self.centralwidget)
+            self.listViewProducts.setGeometry(QtCore.QRect(40, 160, 581, 451))
+            self.listViewProducts.setObjectName("listViewProducts")
+            self.pushButtonAddItem = QtWidgets.QPushButton(self.centralwidget)
+            self.pushButtonAddItem.setGeometry(QtCore.QRect(550, 20, 131, 41))
+            self.pushButtonAddItem.setStyleSheet("font-size: 8pt;\n"
                                                  "")
-        self.pushButtonAddItem.setObjectName("pushButtonAddItem")
-        self.pushButtonSave = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButtonSave.setGeometry(QtCore.QRect(210, 10, 131, 41))
-        self.pushButtonSave.setObjectName("pushButtonSave")
-        self.pushButtonLoad = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButtonLoad.setGeometry(QtCore.QRect(360, 10, 131, 41))
-        self.pushButtonLoad.setObjectName("pushButtonLoad")
-        self.pushButtonRemove = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButtonRemove.setGeometry(QtCore.QRect(660, 10, 131, 41))
-        self.pushButtonRemove.setStyleSheet("font-size: 8pt;\n"
+            self.pushButtonAddItem.setObjectName("pushButtonAddItem")
+            self.pushButtonSave = QtWidgets.QPushButton(self.centralwidget)
+            self.pushButtonSave.setGeometry(QtCore.QRect(250, 20, 131, 41))
+            self.pushButtonSave.setObjectName("pushButtonSave")
+            self.pushButtonLoad = QtWidgets.QPushButton(self.centralwidget)
+            self.pushButtonLoad.setGeometry(QtCore.QRect(400, 20, 131, 41))
+            self.pushButtonLoad.setObjectName("pushButtonLoad")
+            self.pushButtonRemove = QtWidgets.QPushButton(self.centralwidget)
+            self.pushButtonRemove.setGeometry(QtCore.QRect(700, 20, 131, 41))
+            self.pushButtonRemove.setStyleSheet("font-size: 8pt;\n"
                                                 "")
-        self.pushButtonRemove.setObjectName("pushButtonRemove")
-        self.pushButtonEdit = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButtonEdit.setGeometry(QtCore.QRect(810, 10, 131, 41))
-        self.pushButtonEdit.setObjectName("pushButtonEdit")
-        self.labelStatisticCountFood = QtWidgets.QLabel(self.centralwidget)
-        self.labelStatisticCountFood.setGeometry(QtCore.QRect(40, 520, 171, 61))
-        self.labelStatisticCountFood.setStyleSheet("font-size: 12pt;\n"
+            self.pushButtonRemove.setObjectName("pushButtonRemove")
+            self.pushButtonEdit = QtWidgets.QPushButton(self.centralwidget)
+            self.pushButtonEdit.setGeometry(QtCore.QRect(850, 20, 131, 41))
+            self.pushButtonEdit.setObjectName("pushButtonEdit")
+            self.labelStatisticCountFood = QtWidgets.QLabel(self.centralwidget)
+            self.labelStatisticCountFood.setGeometry(QtCore.QRect(60, 630, 171, 61))
+            self.labelStatisticCountFood.setStyleSheet("font-size: 12pt;\n"
                                                        "")
-        self.labelStatisticCountFood.setObjectName("labelStatisticCountFood")
-        self.listViewDish = QtWidgets.QListView(self.centralwidget)
-        self.listViewDish.setGeometry(QtCore.QRect(650, 230, 621, 461))
-        self.listViewDish.setObjectName("listViewDish")
-        self.pushButtonShowStatistics = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButtonShowStatistics.setGeometry(QtCore.QRect(960, 10, 161, 41))
-        self.pushButtonShowStatistics.setObjectName("pushButtonShowStatistics")
-        self.labelCheckAmountOfProducts = QtWidgets.QLabel(self.centralwidget)
-        self.labelCheckAmountOfProducts.setGeometry(QtCore.QRect(860, 90, 111, 16))
-        self.labelCheckAmountOfProducts.setStyleSheet("font-size: 12pt")
-        self.labelCheckAmountOfProducts.setObjectName("labelCheckAmountOfProducts")
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
-        self.pushButtonAddItem.clicked.connect(self.add_item)
-        self.pushButtonEdit.clicked.connect(self.edit_product_or_dish)
-        self.pushButtonRemove.clicked.connect(self.remove_item)
-        self.pushButtonShowStatistics.clicked.connect(self.show_statistics)
-        self.listViewProducts.clicked.connect(self.handle_product_selection)
-        self.listViewDish.clicked.connect(self.handle_dish_selection)
-        self.pushButtonSave.clicked.connect(self.save_data)
-        self.pushButtonLoad.clicked.connect(self.load_data)
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+            self.labelStatisticCountFood.setObjectName("labelStatisticCountFood")
+            self.listViewDish = QtWidgets.QListView(self.centralwidget)
+            self.listViewDish.setGeometry(QtCore.QRect(660, 210, 621, 461))
+            self.listViewDish.setObjectName("listViewDish")
+
+            self.pushButtonShowStatistics = QtWidgets.QPushButton(self.centralwidget)
+            self.pushButtonShowStatistics.setGeometry(QtCore.QRect(1000, 20, 161, 41))
+            self.pushButtonShowStatistics.setObjectName("pushButtonShowStatistics")
+
+            self.labelCheckAmountOfProducts = QtWidgets.QLabel(self.centralwidget)
+            self.labelCheckAmountOfProducts.setGeometry(QtCore.QRect(440, 650, 111, 16))
+            self.labelCheckAmountOfProducts.setStyleSheet("font-size: 12pt")
+            self.labelCheckAmountOfProducts.setObjectName("labelCheckAmountOfProducts")
+
+            self.lineEditSearch = QtWidgets.QLineEdit(self.centralwidget)
+            self.lineEditSearch.setGeometry(QtCore.QRect(480, 90, 361, 41))
+            self.lineEditSearch.setObjectName("lineEditSearch")
+            self.lineEditSearch.setPlaceholderText("Введіть пошуковий запит")
+
+            self.comboBoxSelectionForSearch = QtWidgets.QComboBox(self.centralwidget)
+            self.comboBoxSelectionForSearch.setGeometry(QtCore.QRect(330, 90, 141, 41))
+            self.comboBoxSelectionForSearch.setObjectName("comboBoxSelectionForSearch")
+            self.comboBoxSelectionForSearch.addItem("Продукти")
+            self.comboBoxSelectionForSearch.addItem("Страви")
+
+            self.pushButtonSearch = QtWidgets.QPushButton(self.centralwidget)
+            self.pushButtonSearch.setGeometry(QtCore.QRect(850, 90, 141, 41))
+            self.pushButtonSearch.setStyleSheet("font-size: 16pt;")
+            self.pushButtonSearch.setObjectName("pushButtonSearch")
+            self.pushButtonSearch.setText("Пошук")
+
+
+            MainWindow.setCentralWidget(self.centralwidget)
+            self.statusbar = QtWidgets.QStatusBar(MainWindow)
+            self.statusbar.setObjectName("statusbar")
+
+            MainWindow.setStatusBar(self.statusbar)
+
+            self.pushButtonAddItem.clicked.connect(self.add_item)
+            self.pushButtonSearch.clicked.connect(self.search_items)
+            self.pushButtonEdit.clicked.connect(self.edit_product_or_dish)
+            self.pushButtonRemove.clicked.connect(self.remove_item)
+            self.pushButtonShowStatistics.clicked.connect(self.show_statistics)
+            self.listViewProducts.clicked.connect(self.handle_product_selection)
+            self.listViewDish.clicked.connect(self.handle_dish_selection)
+            self.pushButtonSave.clicked.connect(self.save_data)
+            self.pushButtonLoad.clicked.connect(self.load_data)
+            self.retranslateUi(MainWindow)
+            QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def handle_product_selection(self, index):
         if self.selected_product_index == index.row():
@@ -483,6 +542,28 @@ class Ui_MainWindow(object):
 
         self.labelStatistic.setText(statistics_text)
 
+    def search_items(self):
+        try:
+            search_query = self.lineEditSearch.text().strip().lower()
+            search_option = self.comboBoxSelectionForSearch.currentText()
+
+            if search_option == "Продукти":
+                self.products_model.clear()
+                for food in self.refrigerator._foods:
+                    if isinstance(food, Product) and search_query in food.name.lower():
+                        expiration_date_str = food.expiration_date.strftime('%Y-%m-%d')
+                        item = QtGui.QStandardItem(
+                            f"{food.name} ({food.quantity}) - Термін придатності: {expiration_date_str}")
+                        self.products_model.appendRow(item)
+            else:
+                self.dishes_model.clear()
+                for food in self.refrigerator._foods:
+                    if isinstance(food, Dish) and search_query in food.name.lower():
+                        item = QtGui.QStandardItem(food.name)
+                        self.dishes_model.appendRow(item)
+        except Exception as e:
+            QtWidgets.QMessageBox.critical(self.centralwidget, "Помилка", f"Виникла помилка: {str(e)}")
+
     def update_product_list(self):
         self.products_model.clear()
         for food in self.refrigerator._foods:
@@ -490,6 +571,7 @@ class Ui_MainWindow(object):
                 expiration_date_str = food.expiration_date.strftime('%Y-%m-%d')
                 item = QtGui.QStandardItem(f"{food.name} ({food.quantity}) - Expires on {expiration_date_str}")
                 self.products_model.appendRow(item)
+        self.listViewProducts.setModel(self.products_model)  # Update the ListView
 
     def update_dish_list(self):
         self.dishes_model.clear()
@@ -497,6 +579,7 @@ class Ui_MainWindow(object):
             if isinstance(food, Dish):
                 item = QtGui.QStandardItem(food.name)
                 self.dishes_model.appendRow(item)
+        self.listViewDish.setModel(self.dishes_model)  # Update the ListView
 
 if __name__ == "__main__":
     import sys

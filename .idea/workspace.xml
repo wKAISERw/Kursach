@@ -5,18 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="876da0dd-4710-404d-aec0-fc3e8dec9e75" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Classes/Refrigerator.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Serializer/Serialization.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Classes/Analyzer.py" beforeDir="false" afterPath="$PROJECT_DIR$/Classes/Statistics.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Classes/Dish.py" beforeDir="false" afterPath="$PROJECT_DIR$/Classes/Dish.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Classes/Food.py" beforeDir="false" afterPath="$PROJECT_DIR$/Classes/Food.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Classes/Fridge.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Classes/Product.py" beforeDir="false" afterPath="$PROJECT_DIR$/Classes/Product.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MainProgram.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainProgram/FoodManagerGUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainProgram/FoodManagerGUI.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainProgram/MainProgram.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/mainProgram/MainProgram.ui" beforeDir="false" afterPath="$PROJECT_DIR$/mainProgram/MainProgram.ui" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -43,50 +32,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.FoodManagerGUI.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Login.executor&quot;: &quot;Run&quot;,
-    &quot;Python.MainProgram.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Registration.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/User/PycharmProjects/Food&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.FoodManagerGUI.executor": "Run",
+    "Python.Login.executor": "Run",
+    "Python.MainProgram.executor": "Run",
+    "Python.Registration.executor": "Run",
+    "Python.StatisticsDialog (1).executor": "Run",
+    "Python.StatisticsDialog.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.test.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/User/PycharmProjects/Food"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\User\PycharmProjects\smartFridge\mainProgram" />
       <recent name="C:\Users\User\PycharmProjects\smartFridge" />
+      <recent name="C:\Users\User\PycharmProjects\smartFridge\mainProgram" />
       <recent name="C:\Users\User\PycharmProjects\smartFridge\registration" />
     </key>
   </component>
   <component name="RunManager" selected="Python.test">
-    <configuration name="FoodManagerGUI" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="smartFridge" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/mainProgram" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/mainProgram/FoodManagerGUI.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="Login" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="smartFridge" />
       <option name="ENV_FILES" value="" />
@@ -131,7 +100,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="Registration" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="StatisticsDialog (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="smartFridge" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -140,11 +109,33 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/registration" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/registration/Registration.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/StatisticsDialog.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="StatisticsDialog" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="smartFridge" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/mainProgram" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="C:\Users\User\PycharmProjects\smartFridge\StatisticsDialog.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -200,10 +191,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.test" />
-        <item itemvalue="Python.Login" />
-        <item itemvalue="Python.Registration" />
-        <item itemvalue="Python.FoodManagerGUI" />
+        <item itemvalue="Python.StatisticsDialog (1)" />
+        <item itemvalue="Python.StatisticsDialog" />
         <item itemvalue="Python.MainProgram" />
+        <item itemvalue="Python.Login" />
       </list>
     </recent_temporary>
   </component>
