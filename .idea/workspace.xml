@@ -5,6 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="876da0dd-4710-404d-aec0-fc3e8dec9e75" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Classes/Refrigerator.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Serializer/Serialization.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Classes/Analyzer.py" beforeDir="false" afterPath="$PROJECT_DIR$/Classes/Statistics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Classes/Dish.py" beforeDir="false" afterPath="$PROJECT_DIR$/Classes/Dish.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Classes/Food.py" beforeDir="false" afterPath="$PROJECT_DIR$/Classes/Food.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Classes/Fridge.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Classes/Product.py" beforeDir="false" afterPath="$PROJECT_DIR$/Classes/Product.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MainProgram.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainProgram/FoodManagerGUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainProgram/FoodManagerGUI.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainProgram/MainProgram.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainProgram/MainProgram.ui" beforeDir="false" afterPath="$PROJECT_DIR$/mainProgram/MainProgram.ui" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -188,10 +200,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.test" />
-        <item itemvalue="Python.FoodManagerGUI" />
-        <item itemvalue="Python.MainProgram" />
         <item itemvalue="Python.Login" />
         <item itemvalue="Python.Registration" />
+        <item itemvalue="Python.FoodManagerGUI" />
+        <item itemvalue="Python.MainProgram" />
       </list>
     </recent_temporary>
   </component>
@@ -235,5 +247,16 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/registration/Login.py</url>
+          <line>97</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

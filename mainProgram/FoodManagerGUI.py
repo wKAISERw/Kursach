@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLineEdit, QPushButton, QComboBox, QLabel, QMessageBox
 from datetime import datetime, timedelta
 
-import Classes.Fridge, Classes.Food,Classes.PerishableProduct,Classes.Product,Classes.Analyzer
+import Classes.Refrigerator, Classes.Food,Classes.PerishableProduct,Classes.Product,Classes.Statistics
 from Classes import *
 
 
