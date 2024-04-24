@@ -134,8 +134,10 @@ class Statistics:
     def analyze_foods(self):
         product_counts = Counter(food.name for food in self._refrigerator._foods if isinstance(food, Product))
         low_stock_products = [name for name, count in product_counts.items() if count <= 3]
-        expired_foods = [food for food in self._refrigerator._foods if isinstance(food, Product) and not food.check_expiration()]
-        return len(self._refrigerator._foods), len([food for food in self._refrigerator._foods if isinstance(food, Dish)]), low_stock_products, expired_foods
+        expired_foods = [food for food in self._refrigerator._foods if
+                         isinstance(food, Product) and not food.check_expiration()]
+        return len(self._refrigerator._foods), len(
+            [food for food in self._refrigerator._foods if isinstance(food, Dish)]), low_stock_products, expired_foods
 
     def recommend_purchases(self):
         total_foods, total_dishes, low_stock_products, expired_foods = self.analyze_foods()
@@ -149,7 +151,8 @@ class Statistics:
         if expired_foods:
             recommendations.append("The following products have expired or are about to expire:")
             for product in expired_foods:
-                recommendations.append(f"- {product.name} (Expiration date: {product.expiration_date.strftime('%Y-%m-%d')})")
+                recommendations.append(
+                    f"- {product.name} (Expiration date: {product.expiration_date.strftime('%Y-%m-%d')})")
         return recommendations
 class StatisticsDialog(QtWidgets.QDialog):
     def __init__(self, refrigerator, parent=None):
@@ -222,11 +225,7 @@ class Ui_MainWindow(object):
             self.pushButtonEdit = QtWidgets.QPushButton(self.centralwidget)
             self.pushButtonEdit.setGeometry(QtCore.QRect(850, 20, 131, 41))
             self.pushButtonEdit.setObjectName("pushButtonEdit")
-            self.labelStatisticCountFood = QtWidgets.QLabel(self.centralwidget)
-            self.labelStatisticCountFood.setGeometry(QtCore.QRect(60, 630, 171, 61))
-            self.labelStatisticCountFood.setStyleSheet("font-size: 12pt;\n"
-                                                       "")
-            self.labelStatisticCountFood.setObjectName("labelStatisticCountFood")
+
             self.listViewDish = QtWidgets.QListView(self.centralwidget)
             self.listViewDish.setGeometry(QtCore.QRect(660, 210, 621, 461))
             self.listViewDish.setObjectName("listViewDish")
@@ -235,10 +234,7 @@ class Ui_MainWindow(object):
             self.pushButtonShowStatistics.setGeometry(QtCore.QRect(1000, 20, 161, 41))
             self.pushButtonShowStatistics.setObjectName("pushButtonShowStatistics")
 
-            self.labelCheckAmountOfProducts = QtWidgets.QLabel(self.centralwidget)
-            self.labelCheckAmountOfProducts.setGeometry(QtCore.QRect(440, 650, 111, 16))
-            self.labelCheckAmountOfProducts.setStyleSheet("font-size: 12pt")
-            self.labelCheckAmountOfProducts.setObjectName("labelCheckAmountOfProducts")
+
 
             self.lineEditSearch = QtWidgets.QLineEdit(self.centralwidget)
             self.lineEditSearch.setGeometry(QtCore.QRect(480, 90, 361, 41))
@@ -257,7 +253,16 @@ class Ui_MainWindow(object):
             self.pushButtonSearch.setObjectName("pushButtonSearch")
             self.pushButtonSearch.setText("Пошук")
 
+            self.labelStatistic = QtWidgets.QLabel(self.centralwidget)
+            self.labelStatistic.setGeometry(QtCore.QRect(60, 630, 171, 61))
+            self.labelStatistic.setStyleSheet("font-size: 12pt;")
+            self.labelStatistic.setObjectName("labelStatistic")
 
+            self.lastActionLabel = QtWidgets.QLabel(self.centralwidget)
+            self.lastActionLabel.setGeometry(QtCore.QRect(440, 650, 111, 16))
+            self.lastActionLabel.setStyleSheet("font-size: 10pt;")
+            self.lastActionLabel.setObjectName("lastActionLabel")
+            self.last_action = ""  # Ініціалізація атрибута
             MainWindow.setCentralWidget(self.centralwidget)
             self.statusbar = QtWidgets.QStatusBar(MainWindow)
             self.statusbar.setObjectName("statusbar")
@@ -273,6 +278,7 @@ class Ui_MainWindow(object):
             self.listViewDish.clicked.connect(self.handle_dish_selection)
             self.pushButtonSave.clicked.connect(self.save_data)
             self.pushButtonLoad.clicked.connect(self.load_data)
+            self.lastActionLabel.setText(self.last_action)
             self.retranslateUi(MainWindow)
             QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -292,6 +298,17 @@ class Ui_MainWindow(object):
             self.selected_product_index = None
             self.selected_dish_index = index.row()
 
+    def show_statistics(self):
+        recommendations = self.statistics.recommend_purchases()
+        statistics_text = "\n".join(recommendations)
+        QtWidgets.QMessageBox.information(self.centralwidget, "Refrigerator Statistics", statistics_text)
+
+        # Перевірка кількості продуктів та страв
+        total_foods, total_dishes, _, _ = self.statistics.analyze_foods()
+        if total_foods < 5:
+            QtWidgets.QMessageBox.warning(self.centralwidget, "Warning", "Your product stock is running low!")
+        if total_dishes < 5:
+            QtWidgets.QMessageBox.warning(self.centralwidget, "Warning", "Your dish stock is running low!")
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -300,23 +317,32 @@ class Ui_MainWindow(object):
         self.pushButtonLoad.setText(_translate("MainWindow", "Завантажити"))
         self.pushButtonRemove.setText(_translate("MainWindow", "Видалити"))
         self.pushButtonEdit.setText(_translate("MainWindow", "Редагувати"))
-        self.labelStatisticCountFood.setText(_translate("MainWindow", "TextLabel"))
+
         self.pushButtonShowStatistics.setText(_translate("MainWindow", "Переглянути статистику"))
-        self.labelCheckAmountOfProducts.setText(_translate("MainWindow", "TextLabel"))
+        self.labelStatistic.setText(_translate("MainWindow", "TextLabel"))
+        self.lastActionLabel.setText(_translate( "MainWindow", "TextLabel"))
+
 
     def add_item(self):
         item_type, ok = QtWidgets.QInputDialog.getItem(
             self.centralwidget, "Add Item", "Select item type:", ("Product", "Dish"), 0, False)
         if ok and item_type:
             if item_type == "Product":
-                self.add_product()
+                new_product = self.add_product()
+                if new_product:
+                    QtWidgets.QMessageBox.information(self.centralwidget, "Success",
+                                                      f"Product '{new_product.name}' added successfully.")
+                    self.last_action = f"Added product '{new_product.name}'"
             else:
                 if self.refrigerator._foods and any(isinstance(food, Product) for food in self.refrigerator._foods):
-                    self.add_dish()
+                    new_dish = self.add_dish()
+                    if new_dish:
+                        QtWidgets.QMessageBox.information(self.centralwidget, "Success",
+                                                          f"Dish '{new_dish.name}' added successfully.")
+                        self.last_action = f"Added dish '{new_dish.name}'"
                 else:
                     QtWidgets.QMessageBox.warning(
                         self.centralwidget, "Warning", "You need to add products before creating a dish.")
-
     def add_dish(self):
         dish_name, ok = QtWidgets.QInputDialog.getText(
             self.centralwidget, "Add Dish", "Enter dish name:")
@@ -496,14 +522,16 @@ class Ui_MainWindow(object):
             self.update_product_list()
             self.selected_product_index = None
             QtWidgets.QMessageBox.information(
-                self.centralwidget, "Успіх", f"Продукт '{selected_product.name}' успішно видалено.")
+                self.centralwidget, "Success", f"Product '{selected_product.name}' removed successfully.")
+            self.last_action = f"Removed product '{selected_product.name}'"
         elif self.selected_dish_index is not None:
             selected_dish = self.refrigerator._foods[self.selected_dish_index]
             self.refrigerator.remove_food(selected_dish)
             self.update_dish_list()
             self.selected_dish_index = None
             QtWidgets.QMessageBox.information(
-                self.centralwidget, "Успіх", f"Страва '{selected_dish.name}' успішно видалена.")
+                self.centralwidget, "Success", f"Dish '{selected_dish.name}' removed successfully.")
+            self.last_action = f"Removed dish '{selected_dish.name}'"
 
     def save_data(self):
         filename, _ = QtWidgets.QFileDialog.getSaveFileName(self.centralwidget, "Save Data", "", "JSON Files (*.json)")
