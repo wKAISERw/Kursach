@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1332</width>
-    <height>726</height>
+    <height>896</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -137,13 +137,13 @@
      <string>Переглянути статистику</string>
     </property>
    </widget>
-   <widget class="QLabel" name="labelCheckAmountOfProducts">
+   <widget class="QLabel" name="labelStockProducts">
     <property name="geometry">
      <rect>
-      <x>440</x>
-      <y>650</y>
-      <width>111</width>
-      <height>16</height>
+      <x>380</x>
+      <y>480</y>
+      <width>271</width>
+      <height>371</height>
      </rect>
     </property>
     <property name="styleSheet">

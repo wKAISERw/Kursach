@@ -88,6 +88,9 @@ class Product(Food):
         self._quantity = quantity
         self._expiration_date = expiration_date
 
+    def __str__(self):
+        return f"{self.name} (x{self.quantity})"
+
     @property
     def quantity(self):
         return self._quantity
@@ -105,6 +108,7 @@ class Product(Food):
 
     def is_expired(self):
         return self._expiration_date < datetime.now().date()
+
 
 class Dish(Food):
     def __init__(self, name):
@@ -154,6 +158,14 @@ class Statistics:
                 recommendations.append(
                     f"- {product.name} (Expiration date: {product.expiration_date.strftime('%Y-%m-%d')})")
         return recommendations
+
+    def analyze_low_stock(self):
+        low_stock_products = []
+        for food in self._refrigerator._foods:
+            if isinstance(food, Product) and food.quantity <= 5:
+                low_stock_products.append(food.name)
+
+        return low_stock_products
 class StatisticsDialog(QtWidgets.QDialog):
     def __init__(self, refrigerator, parent=None):
         super().__init__(parent)
@@ -258,11 +270,11 @@ class Ui_MainWindow(object):
             self.labelStatistic.setStyleSheet("font-size: 12pt;")
             self.labelStatistic.setObjectName("labelStatistic")
 
-            self.lastActionLabel = QtWidgets.QLabel(self.centralwidget)
-            self.lastActionLabel.setGeometry(QtCore.QRect(440, 650, 111, 16))
-            self.lastActionLabel.setStyleSheet("font-size: 10pt;")
-            self.lastActionLabel.setObjectName("lastActionLabel")
-            self.last_action = ""  # Ініціалізація атрибута
+            self.labelStockProducts = QtWidgets.QLabel(self.centralwidget)
+            self.labelStockProducts.setGeometry(QtCore.QRect(380, 480, 271, 371))
+            self.labelStockProducts.setStyleSheet("font-size: 12pt;")
+            self.labelStockProducts.setObjectName("labelStockProducts")
+          
             MainWindow.setCentralWidget(self.centralwidget)
             self.statusbar = QtWidgets.QStatusBar(MainWindow)
             self.statusbar.setObjectName("statusbar")
@@ -273,12 +285,12 @@ class Ui_MainWindow(object):
             self.pushButtonSearch.clicked.connect(self.search_items)
             self.pushButtonEdit.clicked.connect(self.edit_product_or_dish)
             self.pushButtonRemove.clicked.connect(self.remove_item)
-            self.pushButtonShowStatistics.clicked.connect(self.show_statistics)
+            self.pushButtonShowStatistics.clicked.connect(self.update_low_stock_labels)
             self.listViewProducts.clicked.connect(self.handle_product_selection)
             self.listViewDish.clicked.connect(self.handle_dish_selection)
             self.pushButtonSave.clicked.connect(self.save_data)
             self.pushButtonLoad.clicked.connect(self.load_data)
-            self.lastActionLabel.setText(self.last_action)
+
             self.retranslateUi(MainWindow)
             QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -298,17 +310,7 @@ class Ui_MainWindow(object):
             self.selected_product_index = None
             self.selected_dish_index = index.row()
 
-    def show_statistics(self):
-        recommendations = self.statistics.recommend_purchases()
-        statistics_text = "\n".join(recommendations)
-        QtWidgets.QMessageBox.information(self.centralwidget, "Refrigerator Statistics", statistics_text)
 
-        # Перевірка кількості продуктів та страв
-        total_foods, total_dishes, _, _ = self.statistics.analyze_foods()
-        if total_foods < 5:
-            QtWidgets.QMessageBox.warning(self.centralwidget, "Warning", "Your product stock is running low!")
-        if total_dishes < 5:
-            QtWidgets.QMessageBox.warning(self.centralwidget, "Warning", "Your dish stock is running low!")
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
@@ -320,7 +322,7 @@ class Ui_MainWindow(object):
 
         self.pushButtonShowStatistics.setText(_translate("MainWindow", "Переглянути статистику"))
         self.labelStatistic.setText(_translate("MainWindow", "TextLabel"))
-        self.lastActionLabel.setText(_translate( "MainWindow", "TextLabel"))
+        self.labelStockProducts.setText(_translate( "MainWindow", "TextLabel"))
 
 
     def add_item(self):
@@ -552,23 +554,7 @@ class Ui_MainWindow(object):
                 QtWidgets.QMessageBox.information(self.centralwidget, "Success", "Data loaded successfully.")
             else:
                 QtWidgets.QMessageBox.warning(self.centralwidget, "Error", "Error loading data.")
-    def show_statistics(self):
-        total_foods, total_dishes, low_stock_products, expired_foods = self.statistics.analyze_foods()
-        statistics_text = f"Total Foods: {total_foods}\n"
-        statistics_text += f"Total Dishes: {total_dishes}\n\n"
 
-        if low_stock_products:
-            statistics_text += "You should buy more of the following products:\n"
-            for product_name in low_stock_products:
-                statistics_text += f"- {product_name}\n"
-            statistics_text += "\n"
-
-        if expired_foods:
-            statistics_text += "The following products have expired or are about to expire:\n"
-            for product in expired_foods:
-                statistics_text += f"- {product.name} (Expiration date: {product.expiration_date.strftime('%Y-%m-%d')})\n"
-
-        self.labelStatistic.setText(statistics_text)
 
     def search_items(self):
         try:
@@ -591,6 +577,18 @@ class Ui_MainWindow(object):
                         self.dishes_model.appendRow(item)
         except Exception as e:
             QtWidgets.QMessageBox.critical(self.centralwidget, "Помилка", f"Виникла помилка: {str(e)}")
+
+    def update_low_stock_labels(self):
+        low_stock_products = self.statistics.analyze_low_stock()
+        product_text = "Продукти з низьким запасом (≤ 5):\n"
+
+        if not low_stock_products:
+                product_text += "Усі продукти в достатній кількості"
+        else:
+                for product_name in low_stock_products:
+                    product_text += f"- {product_name}\n"
+
+        self.labelStockProducts.setText(product_text)
 
     def update_product_list(self):
         self.products_model.clear()
