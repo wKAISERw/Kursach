@@ -6,6 +6,9 @@ class Product(Food):
         self._quantity = quantity
         self._expiration_date = expiration_date
 
+    def __str__(self):
+        return f"{self.name} (x{self.quantity})"
+
     @property
     def quantity(self):
         return self._quantity

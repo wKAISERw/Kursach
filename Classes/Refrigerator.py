@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from collections import Counter
 
-class Refrigerator():
+class Refrigerator:
     def __init__(self):
         self._foods = []
 

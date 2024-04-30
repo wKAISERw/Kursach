@@ -135,35 +135,17 @@ class Statistics:
     def __init__(self, refrigerator):
         self._refrigerator = refrigerator
 
-    def analyze_foods(self):
-        product_counts = Counter(food.name for food in self._refrigerator._foods if isinstance(food, Product))
-        low_stock_products = [name for name, count in product_counts.items() if count <= 3]
-        expired_foods = [food for food in self._refrigerator._foods if
-                         isinstance(food, Product) and not food.check_expiration()]
-        return len(self._refrigerator._foods), len(
-            [food for food in self._refrigerator._foods if isinstance(food, Dish)]), low_stock_products, expired_foods
-
-    def recommend_purchases(self):
-        total_foods, total_dishes, low_stock_products, expired_foods = self.analyze_foods()
-        recommendations = []
-        recommendations.append(f"Total Foods: {total_foods}")
-        recommendations.append(f"Total Dishes: {total_dishes}")
-        if low_stock_products:
-            recommendations.append("You should buy more of the following products:")
-            for product_name in low_stock_products:
-                recommendations.append(f"- {product_name}")
-        if expired_foods:
-            recommendations.append("The following products have expired or are about to expire:")
-            for product in expired_foods:
-                recommendations.append(
-                    f"- {product.name} (Expiration date: {product.expiration_date.strftime('%Y-%m-%d')})")
-        return recommendations
+    def get_total_counts(self):
+        total_foods = len(self._refrigerator._foods)
+        total_products = len([food for food in self._refrigerator._foods if isinstance(food, Product)])
+        total_dishes = len([food for food in self._refrigerator._foods if isinstance(food, Dish)])
+        return total_foods, total_products, total_dishes
 
     def analyze_low_stock(self):
         low_stock_products = []
         for food in self._refrigerator._foods:
             if isinstance(food, Product) and food.quantity <= 5:
-                low_stock_products.append(food.name)
+                low_stock_products.append(f"{food.name} (x{food.quantity})")
 
         return low_stock_products
 class StatisticsDialog(QtWidgets.QDialog):
@@ -209,6 +191,7 @@ class Ui_MainWindow(object):
         self.dishes_model = QtGui.QStandardItemModel()
         self.selected_product_index = None
         self.selected_dish_index = None
+
 
     def setupUi(self, MainWindow):
             MainWindow.setObjectName("MainWindow")
@@ -266,7 +249,7 @@ class Ui_MainWindow(object):
             self.pushButtonSearch.setText("Пошук")
 
             self.labelStatistic = QtWidgets.QLabel(self.centralwidget)
-            self.labelStatistic.setGeometry(QtCore.QRect(60, 630, 171, 61))
+            self.labelStatistic.setGeometry(QtCore.QRect(50, 500, 271, 331))
             self.labelStatistic.setStyleSheet("font-size: 12pt;")
             self.labelStatistic.setObjectName("labelStatistic")
 
@@ -285,7 +268,7 @@ class Ui_MainWindow(object):
             self.pushButtonSearch.clicked.connect(self.search_items)
             self.pushButtonEdit.clicked.connect(self.edit_product_or_dish)
             self.pushButtonRemove.clicked.connect(self.remove_item)
-            self.pushButtonShowStatistics.clicked.connect(self.update_low_stock_labels)
+            self.pushButtonShowStatistics.clicked.connect(self.pushButtonShowStatistics_clicked)
             self.listViewProducts.clicked.connect(self.handle_product_selection)
             self.listViewDish.clicked.connect(self.handle_dish_selection)
             self.pushButtonSave.clicked.connect(self.save_data)
@@ -578,17 +561,30 @@ class Ui_MainWindow(object):
         except Exception as e:
             QtWidgets.QMessageBox.critical(self.centralwidget, "Помилка", f"Виникла помилка: {str(e)}")
 
-    def update_low_stock_labels(self):
-        low_stock_products = self.statistics.analyze_low_stock()
-        product_text = "Продукти з низьким запасом (≤ 5):\n"
+    def pushButtonShowStatistics_clicked(self):
+        if self.labelStatistic.text().strip() == "" and self.labelStockProducts.text().strip() == "":
+            # Показати лейбли
+            low_stock_products = self.statistics.analyze_low_stock()
+            product_text = "Продукти з низьким запасом (≤ 5):\n"
 
-        if not low_stock_products:
+            if not low_stock_products:
                 product_text += "Усі продукти в достатній кількості"
-        else:
-                for product_name in low_stock_products:
-                    product_text += f"- {product_name}\n"
+            else:
+                for product_str in low_stock_products:
+                    product_text += f"- {product_str}\n"
 
-        self.labelStockProducts.setText(product_text)
+            self.labelStockProducts.setText(product_text)
+
+            total_foods, total_products, total_dishes = self.statistics.get_total_counts()
+            statistic_text = f"Загальна кількість їжі: {total_foods}\n"
+            statistic_text += f"Загальна кількість продуктів: {total_products}\n"
+            statistic_text += f"Загальна кількість страв: {total_dishes}"
+
+            self.labelStatistic.setText(statistic_text)
+        else:
+            # Очистити лейбли
+            self.labelStatistic.clear()
+            self.labelStockProducts.clear()
 
     def update_product_list(self):
         self.products_model.clear()
