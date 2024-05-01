@@ -1,4 +1,4 @@
-import Food
+from Classes.base import Food
 from datetime import datetime
 class Product(Food):
     def __init__(self, name, quantity, expiration_date):

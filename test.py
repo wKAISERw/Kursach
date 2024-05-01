@@ -148,40 +148,6 @@ class Statistics:
                 low_stock_products.append(f"{food.name} (x{food.quantity})")
 
         return low_stock_products
-class StatisticsDialog(QtWidgets.QDialog):
-    def __init__(self, refrigerator, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Статистика")
-        self.setModal(True)
-
-        layout = QtWidgets.QVBoxLayout()
-
-        statistics = Statistics(refrigerator)
-        total_foods, total_dishes, low_stock_products, expired_foods = statistics.analyze_foods()
-
-        info_text = f"Всього продуктів: {total_foods}\n"
-        info_text += f"Всього страв: {total_dishes}\n\n"
-
-        if low_stock_products:
-            info_text += "Необхідно поповнити запаси таких продуктів:\n"
-            for product_name in low_stock_products:
-                info_text += f"- {product_name}\n"
-            info_text += "\n"
-
-        if expired_foods:
-            info_text += "Такі продукти прострочені або закінчується термін придатності:\n"
-            for product in expired_foods:
-                info_text += f"- {product.name} (Термін придатності: {product.expiration_date.strftime('%Y-%m-%d')})\n"
-
-        info_label = QtWidgets.QLabel(info_text)
-        info_label.setWordWrap(True)
-        layout.addWidget(info_label)
-
-        close_button = QtWidgets.QPushButton("Закрити")
-        close_button.clicked.connect(self.accept)
-        layout.addWidget(close_button)
-
-        self.setLayout(layout)
 
 class Ui_MainWindow(object):
     def __init__(self):
@@ -562,7 +528,14 @@ class Ui_MainWindow(object):
             QtWidgets.QMessageBox.critical(self.centralwidget, "Помилка", f"Виникла помилка: {str(e)}")
 
     def pushButtonShowStatistics_clicked(self):
-        if self.labelStatistic.text().strip() == "" and self.labelStockProducts.text().strip() == "":
+        total_foods = len(self.refrigerator._foods)
+
+        if total_foods == 0:
+            # Холодильник порожній
+            self.labelStatistic.setText("Холодильник порожній")
+            self.labelStockProducts.clear()
+        
+        elif self.labelStatistic.text().strip() == "" and self.labelStockProducts.text().strip() == "":
             # Показати лейбли
             low_stock_products = self.statistics.analyze_low_stock()
             product_text = "Продукти з низьким запасом (≤ 5):\n"
@@ -576,9 +549,9 @@ class Ui_MainWindow(object):
             self.labelStockProducts.setText(product_text)
 
             total_foods, total_products, total_dishes = self.statistics.get_total_counts()
-            statistic_text = f"Загальна кількість їжі: {total_foods}\n"
-            statistic_text += f"Загальна кількість продуктів: {total_products}\n"
-            statistic_text += f"Загальна кількість страв: {total_dishes}"
+            statistic_text = f"Загальна к-сть їжі: {total_foods}\n"
+            statistic_text += f"К-сть продуктів: {total_products}\n"
+            statistic_text += f"К-сть страв: {total_dishes}"
 
             self.labelStatistic.setText(statistic_text)
         else:

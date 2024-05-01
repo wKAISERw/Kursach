@@ -7,9 +7,14 @@
     <list default="true" id="876da0dd-4710-404d-aec0-fc3e8dec9e75" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Classes/Dish.py" beforeDir="false" afterPath="$PROJECT_DIR$/Classes/Dish.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Classes/Food.py" beforeDir="false" afterPath="$PROJECT_DIR$/Classes/base.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Classes/PerishableProduct.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Classes/Product.py" beforeDir="false" afterPath="$PROJECT_DIR$/Classes/Product.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Classes/Refrigerator.py" beforeDir="false" afterPath="$PROJECT_DIR$/Classes/Refrigerator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Classes/Receipt.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Classes/Statistics.py" beforeDir="false" afterPath="$PROJECT_DIR$/Classes/Statistics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Serializer/Serialization.py" beforeDir="false" afterPath="$PROJECT_DIR$/Serializer/Serializer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainProgram/FoodManagerGUI.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/mainProgram/MainProgram.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainProgram/MainProgram.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -59,7 +64,7 @@
       <recent name="C:\Users\User\PycharmProjects\smartFridge\registration" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.test">
+  <component name="RunManager" selected="Python.MainProgram">
     <configuration name="Login" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="smartFridge" />
       <option name="ENV_FILES" value="" />
@@ -194,10 +199,10 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.MainProgram" />
         <item itemvalue="Python.test" />
         <item itemvalue="Python.StatisticsDialog (1)" />
         <item itemvalue="Python.StatisticsDialog" />
-        <item itemvalue="Python.MainProgram" />
         <item itemvalue="Python.Login" />
       </list>
     </recent_temporary>
@@ -252,6 +257,13 @@
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
     </breakpoint-manager>
   </component>
 </project>

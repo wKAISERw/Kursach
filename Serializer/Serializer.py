@@ -1,6 +1,12 @@
 import json
 from datetime import datetime
-from Classes import Food,Refrigerator,Product,Dish
+
+
+
+from Classes.Refrigerator import Refrigerator
+from Classes.Product import  Product
+from Classes.Dish import Dish
+
 class Serializer:
     @staticmethod
     def serialize_product(product):
@@ -14,7 +20,7 @@ class Serializer:
     def serialize_dish(dish):
         return {
             "name": dish.name,
-            "ingredients": [ingredient.name for ingredient in dish._ingredients]
+            "ingredients": [ingredient.name for ingredient in dish.ingredients]
         }
 
     @staticmethod
