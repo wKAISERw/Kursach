@@ -247,23 +247,26 @@ class Ui_MainWindow(object):
         selected_ingredients = []
         for ingredient, quantity_input in ingredient_quantity_inputs.items():
             if quantity_input.value() > 0:
-                selected_ingredients.extend([ingredient] * quantity_input.value())
+                selected_ingredients.extend([(ingredient, quantity_input.value())])
 
         new_dish = Dish(dish_name)
-        for ingredient in selected_ingredients:
-            new_dish.add_ingredient(ingredient)
+        for ingredient, quantity in selected_ingredients:
+            for _ in range(quantity):
+                new_dish.add_ingredient(ingredient)
 
         self.refrigerator.add_food(new_dish)
         self.update_dish_list()
 
-        for ingredient in selected_ingredients:
-            ingredient.quantity -= 1
+        ingredients_info = ", ".join(
+            [f"{ingredient.name} (x{quantity})" for ingredient, quantity in selected_ingredients])
+        QtWidgets.QMessageBox.information(
+            self.centralwidget, "Success", f"{dish_name} added to the refrigerator.\nIngredients: {ingredients_info}")
+
+        for ingredient, quantity in selected_ingredients:
+            ingredient.quantity -= quantity
             if ingredient.quantity == 0:
                 self.refrigerator.remove_food(ingredient)
         self.update_product_list()
-
-        QtWidgets.QMessageBox.information(
-            self.centralwidget, "Success", f"{dish_name} added to the refrigerator.")
 
     def edit_product_or_dish(self):
         selected_index = self.listViewProducts.currentIndex().row()
@@ -432,9 +435,13 @@ class Ui_MainWindow(object):
         self.dishes_model.clear()
         for food in self.refrigerator._foods:
             if isinstance(food, Dish):
-                item = QtGui.QStandardItem(food.name)
-                self.dishes_model.appendRow(item)
-        self.listViewDish.setModel(self.dishes_model)  # Update the ListView
+                dish_item = QtGui.QStandardItem(food.name)
+                ingredients_info = ", ".join(
+                    [f"{ingredient.name} (x{food.ingredients.count(ingredient)})" for ingredient in
+                     set(food.ingredients)])
+                dish_item.setToolTip(f"Ingredients: {ingredients_info}")
+                self.dishes_model.appendRow(dish_item)
+        self.listViewDish.setModel(self.dishes_model)
 
 
 if __name__ == "__main__":
