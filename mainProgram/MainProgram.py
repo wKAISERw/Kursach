@@ -9,7 +9,7 @@ import json
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-from Serializer import Serializer
+from Serializer.Serializer import Serializer
 from Classes.Refrigerator import Refrigerator
 from Classes.Product import Product
 from Classes.Dish import Dish
@@ -314,22 +314,40 @@ class Ui_MainWindow(object):
                     ingredient_dialog = QtWidgets.QDialog()
                     ingredient_dialog.setWindowTitle("Select New Ingredients")
                     ingredient_layout = QtWidgets.QVBoxLayout()
+                    ingredient_quantity_inputs = {}
                     for ingredient in new_ingredients:
                         checkbox = QtWidgets.QCheckBox(ingredient.name)
                         ingredient_layout.addWidget(checkbox)
+
+                        quantity_label = QtWidgets.QLabel("Quantity:")
+                        quantity_input = QtWidgets.QSpinBox()
+                        quantity_input.setMinimum(0)
+                        quantity_input.setMaximum(ingredient.quantity)
+                        quantity_input.setValue(selected_dish.ingredients.count(ingredient))
+                        ingredient_layout.addWidget(quantity_label)
+                        ingredient_layout.addWidget(quantity_input)
+
+                        ingredient_quantity_inputs[ingredient] = (checkbox, quantity_input)
+
                     add_button = QtWidgets.QPushButton("Update Dish")
-                    add_button.clicked.connect(ingredient_dialog.accept)
+                    add_button.clicked.connect(
+                        lambda: self.update_dish(selected_dish, new_name, ingredient_quantity_inputs))
                     ingredient_layout.addWidget(add_button)
                     ingredient_dialog.setLayout(ingredient_layout)
-                    if ingredient_dialog.exec_():
-                        selected_ingredients = [new_ingredients[i] for i in range(len(new_ingredients)) if
-                                                ingredient_layout.itemAt(i).widget().isChecked()]
-                        selected_dish.name = new_name
-                        selected_dish.ingredients = selected_ingredients
-                        self.update_dish_list()
-                        QtWidgets.QMessageBox.information(
-                            self.centralwidget, "Success", f"Dish '{selected_dish.name}' edited successfully.")
+                    ingredient_dialog.exec_()
 
+    def update_dish(self, selected_dish, new_name, ingredient_quantity_inputs):
+        selected_ingredients = [(ingredient, quantity_input.value()) for ingredient, (checkbox, quantity_input) in
+                                ingredient_quantity_inputs.items() if checkbox.isChecked()]
+        selected_dish.name = new_name
+        selected_dish.ingredients.clear()
+        for ingredient, quantity in selected_ingredients:
+            for _ in range(quantity):
+                selected_dish.add_ingredient(ingredient)
+
+        self.update_dish_list()
+        QtWidgets.QMessageBox.information(
+            self.centralwidget, "Success", f"Dish '{selected_dish.name}' edited successfully.")
     def remove_item(self):
         if self.selected_product_index is not None:
             selected_product = self.refrigerator._foods[self.selected_product_index]

@@ -1,5 +1,6 @@
 from Classes.base import Food
-from datetime import datetime
+from datetime import date
+
 class Product(Food):
     def __init__(self, name, quantity, expiration_date):
         super().__init__(name)
@@ -21,8 +22,15 @@ class Product(Food):
     def expiration_date(self):
         return self._expiration_date
 
+    @expiration_date.setter
+    def expiration_date(self, value):
+        if isinstance(value, date):
+            self._expiration_date = value
+        else:
+            raise ValueError("Invalid date format for expiration_date")
+
     def check_expiration(self):
-        return self._expiration_date > datetime.now()
+        return self._expiration_date > date.today()
 
     def is_expired(self):
-        return self._expiration_date < datetime.now().date()
+        return self._expiration_date < date.today()

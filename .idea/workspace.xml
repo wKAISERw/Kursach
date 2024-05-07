@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="876da0dd-4710-404d-aec0-fc3e8dec9e75" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Classes/Product.py" beforeDir="false" afterPath="$PROJECT_DIR$/Classes/Product.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainProgram/MainProgram.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainProgram/MainProgram.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -32,22 +33,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.FoodManagerGUI.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Login.executor&quot;: &quot;Run&quot;,
-    &quot;Python.MainProgram.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Registration.executor&quot;: &quot;Run&quot;,
-    &quot;Python.StatisticsDialog (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.StatisticsDialog.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/User/PycharmProjects/Food&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.FoodManagerGUI.executor": "Run",
+    "Python.Login.executor": "Run",
+    "Python.MainProgram.executor": "Debug",
+    "Python.Registration.executor": "Run",
+    "Python.StatisticsDialog (1).executor": "Run",
+    "Python.StatisticsDialog.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.test.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/User/PycharmProjects/Food"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\User\PycharmProjects\smartFridge" />
@@ -246,6 +247,16 @@
           <url>file://$PROJECT_DIR$/registration/Login.py</url>
           <line>97</line>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/mainProgram/MainProgram.py</url>
+          <line>270</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/mainProgram/MainProgram.py</url>
+          <line>368</line>
+          <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
