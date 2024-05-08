@@ -1,10 +1,7 @@
 import json
 from datetime import datetime
-
-
-
 from Classes.Refrigerator import Refrigerator
-from Classes.Product import  Product
+from Classes.Product import Product
 from Classes.Dish import Dish
 
 class Serializer:
@@ -20,7 +17,7 @@ class Serializer:
     def serialize_dish(dish):
         return {
             "name": dish.name,
-            "ingredients": [ingredient.name for ingredient in dish.ingredients]
+            "products": [Serializer.serialize_product(product) for product in dish.products]
         }
 
     @staticmethod
@@ -32,14 +29,22 @@ class Serializer:
         )
 
     @staticmethod
+    @staticmethod
     def deserialize_dish(dish_data, refrigerator):
         dish = Dish(dish_data["name"])
-        for ingredient_name in dish_data["ingredients"]:
-            ingredient = next((food for food in refrigerator._foods if isinstance(food, Product) and food.name == ingredient_name), None)
-            if ingredient:
-                dish.add_ingredient(ingredient)
+        if "products" in dish_data:
+            # Новий формат
+            for product_data in dish_data["products"]:
+                product = Serializer.deserialize_product(product_data)
+                dish.add_product(product)
+        else:
+            # Старий формат
+            for ingredient_name in dish_data["ingredients"]:
+                ingredient = next((food for food in refrigerator._foods if
+                                   isinstance(food, Product) and food.name == ingredient_name), None)
+                if ingredient:
+                    dish.add_product(ingredient)
         return dish
-
     @staticmethod
     def save_data(refrigerator, filename):
         data = {

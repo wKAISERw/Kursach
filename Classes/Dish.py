@@ -1,21 +1,27 @@
 from datetime import datetime, timedelta
 from collections import Counter
 from Classes.base import Food
+from datetime import datetime, timedelta
+from collections import Counter
+from Classes.base import Food
+
 class Dish(Food):
     def __init__(self, name):
         super().__init__(name)
-        self._ingredients = []
+        self._products = []
 
-    def add_ingredient(self, ingredient):
-        self._ingredients.append(ingredient)
+    def add_product(self, product):
+        self._products.append(product)
+        product.quantity -= 1
 
-    def remove_ingredient(self, ingredient):
-        self._ingredients.remove(ingredient)
+    def remove_product(self, product):
+        self._products.remove(product)
+        product.quantity += 1
 
     @property
-    def ingredients(self):
-        return self._ingredients
+    def products(self):
+        return self._products
 
-    @ingredients.setter
-    def ingredients(self, value):
-        self._ingredients = value
+    @products.setter
+    def products(self, value):
+        self._products = value
