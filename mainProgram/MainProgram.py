@@ -116,6 +116,7 @@ class Ui_MainWindow(object):
         else:
             self.selected_product_index = index.row()
             self.selected_dish_index = None
+        print(f"Selected product index: {self.selected_product_index}")  # Додайте цей рядок для перевірки значення
 
     def handle_dish_selection(self, index):
         if self.selected_dish_index == index.row():
@@ -124,6 +125,7 @@ class Ui_MainWindow(object):
         else:
             self.selected_product_index = None
             self.selected_dish_index = index.row()
+        print(f"Selected dish index: {self.selected_dish_index}")  # Додайте цей рядок для перевірки значення
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
@@ -270,19 +272,19 @@ class Ui_MainWindow(object):
         self.update_product_list()
 
     def edit_product_or_dish(self):
-        selected_index = self.listViewProducts.currentIndex().row()
-        if selected_index >= 0:
-            selected_food = self.refrigerator._foods[selected_index]
-            if isinstance(selected_food, Product):
+        if self.selected_product_index is not None:
+            selected_product = self.refrigerator._foods[self.selected_product_index]
+            if isinstance(selected_product, Product):
                 new_name, ok = QtWidgets.QInputDialog.getText(
-                    self.centralwidget, "Edit Product", "Enter new product name:")
+                    self.centralwidget, "Edit Product", "Enter new product name:", text=selected_product.name)
                 if ok and new_name:
                     new_quantity, ok = QtWidgets.QInputDialog.getInt(
-                        self.centralwidget, "Edit Product", "Enter new quantity:", 1, 1, 1000, 1)
+                        self.centralwidget, "Edit Product", "Enter new quantity:", selected_product.quantity, 1, 1000,
+                        1)
                     if ok:
                         new_expiration_date, ok = QtWidgets.QInputDialog.getText(
-                            self.centralwidget, "Edit Product",
-                            "Enter new expiration date (YYYY-MM-DD):")
+                            self.centralwidget, "Edit Product", "Enter new expiration date (YYYY-MM-DD):",
+                            text=selected_product.expiration_date.strftime('%Y-%m-%d'))
                         if ok and new_expiration_date:
                             try:
                                 new_expiration_date = datetime.strptime(new_expiration_date, "%Y-%m-%d").date()
@@ -291,72 +293,62 @@ class Ui_MainWindow(object):
                                         self.centralwidget, "Error",
                                         "Product expiration date has already passed. Product cannot be edited.")
                                 else:
-                                    selected_food.name = new_name
-                                    selected_food.quantity = new_quantity
-                                    selected_food.expiration_date = new_expiration_date
+                                    selected_product.name = new_name
+                                    selected_product.quantity = new_quantity
+                                    selected_product.expiration_date = new_expiration_date
                                     self.update_product_list()
                                     QtWidgets.QMessageBox.information(
                                         self.centralwidget, "Success",
-                                        f"Product '{selected_food.name}' edited successfully.")
+                                        f"Product '{selected_product.name}' edited successfully.")
                             except ValueError:
                                 QtWidgets.QMessageBox.warning(
                                     self.centralwidget, "Error", "Invalid expiration date format.")
-        else:
-            selected_index = self.listViewDish.currentIndex().row()
-            if selected_index >= 0:
-                selected_dish = self.refrigerator._foods[selected_index]
+        elif self.selected_dish_index is not None:
+            selected_dish = self.refrigerator._foods[self.selected_dish_index]
+            if isinstance(selected_dish, Dish):
                 new_name, ok = QtWidgets.QInputDialog.getText(
-                    self.centralwidget, "Edit Dish", "Enter new dish name:")
+                    self.centralwidget, "Edit Dish", "Enter new dish name:", text=selected_dish.name)
                 if ok and new_name:
-                    new_ingredients = []
-                    for food in self.refrigerator._foods:
-                        if isinstance(food, Product):
-                            new_ingredients.append(food)
-                    ingredient_dialog = QtWidgets.QDialog()
-                    ingredient_dialog.setWindowTitle("Select New Ingredients")
-                    ingredient_layout = QtWidgets.QVBoxLayout()
-                    ingredient_quantity_inputs = {}
-                    for food in self.refrigerator._foods:
-                        if isinstance(food, Product):
-                            checkbox = QtWidgets.QCheckBox(food.name)
-                            ingredient_layout.addWidget(checkbox)
+                    self.edit_selected_dish(selected_dish, new_name)
 
-                            quantity_label = QtWidgets.QLabel("Quantity:")
-                            quantity_input = QtWidgets.QSpinBox()
-                            quantity_input.setMinimum(0)
-                            quantity_input.setMaximum(food.quantity)
-                            if isinstance(selected_dish, Dish):
-                                quantity_input.setValue(selected_dish.products.count(food))
-                            else:
-                                quantity_input.setValue(0)
-                            ingredient_layout.addWidget(quantity_label)
-                            ingredient_layout.addWidget(quantity_input)
+    def edit_selected_dish(self, selected_dish, new_name):
+        ingredient_dialog = QtWidgets.QDialog()
+        ingredient_dialog.setWindowTitle("Edit Ingredients")
+        ingredient_layout = QtWidgets.QVBoxLayout()
 
-                            ingredient_quantity_inputs[food] = (checkbox, quantity_input)
+        ingredient_quantity_inputs = {}
+        for ingredient, quantity in selected_dish.get_ingredients().items():
+            checkbox = QtWidgets.QCheckBox(ingredient.name)
+            checkbox.setChecked(True)
+            ingredient_layout.addWidget(checkbox)
 
-                    add_button = QtWidgets.QPushButton("Update Dish")
-                    add_button.clicked.connect(
-                        lambda: self.update_dish(selected_dish, new_name, ingredient_quantity_inputs))
-                    ingredient_layout.addWidget(add_button)
-                    ingredient_dialog.setLayout(ingredient_layout)
-                    ingredient_dialog.exec_()
+            quantity_label = QtWidgets.QLabel("Quantity:")
+            quantity_input = QtWidgets.QSpinBox()
+            quantity_input.setMinimum(1)
+            quantity_input.setMaximum(ingredient.quantity)
+            quantity_input.setValue(quantity)
+            ingredient_layout.addWidget(quantity_label)
+            ingredient_layout.addWidget(quantity_input)
 
-    def update_dish(self, selected_dish, new_name, ingredient_quantity_inputs):
-        if isinstance(selected_dish, Dish):
-            selected_ingredients = [(ingredient, quantity_input.value()) for ingredient, (checkbox, quantity_input) in
-                                    ingredient_quantity_inputs.items() if checkbox.isChecked()]
-            selected_dish.name = new_name
-            selected_dish.products.clear()
-            for ingredient, quantity in selected_ingredients:
-                for _ in range(quantity):
-                    selected_dish.add_product(ingredient)
+            ingredient_quantity_inputs[ingredient] = (checkbox, quantity_input)
 
-            self.update_dish_list()
-            QtWidgets.QMessageBox.information(
-                self.centralwidget, "Success", f"Dish '{selected_dish.name}' edited successfully.")
-        else:
-            QtWidgets.QMessageBox.warning(
-                self.centralwidget, "Error", "Selected item is not a Dish.")
+        add_button = QtWidgets.QPushButton("Save Changes")
+        add_button.clicked.connect(lambda: self.save_edited_dish(selected_dish, new_name, ingredient_quantity_inputs))
+        ingredient_layout.addWidget(add_button)
+        ingredient_dialog.setLayout(ingredient_layout)
+
+        ingredient_dialog.exec_()
+
+    def save_edited_dish(self, dish, new_name, ingredient_quantity_inputs):
+        dish.name = new_name
+        dish.clear_products()
+        for ingredient, (checkbox, quantity_input) in ingredient_quantity_inputs.items():
+            if checkbox.isChecked():
+                dish.add_product(ingredient, quantity_input.value())
+        self.update_dish_list()
+        QtWidgets.QMessageBox.information(
+            self.centralwidget, "Success", f"Dish '{dish.name}' edited successfully.")
+
     def remove_item(self):
         if self.selected_product_index is not None:
             selected_product = self.refrigerator._foods[self.selected_product_index]
