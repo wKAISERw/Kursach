@@ -30,8 +30,12 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1332, 726)
+
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+
+
+
         self.listViewProducts = QtWidgets.QListView(self.centralwidget)
         self.listViewProducts.setGeometry(QtCore.QRect(40, 160, 581, 451))
         self.listViewProducts.setObjectName("listViewProducts")
@@ -93,8 +97,112 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
+        # Стилізація для віджетів додавання, редагування
+        self.pushButtonAddItem.setStyleSheet("""
+            QPushButton {
+                font-size: 12pt;
+                background-color: #4CAF50;
+                color: white;
+                border: 2px solid #4CAF50;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #45a049; /* Колір при наведенні курсора */
+            }
+        """)
+        self.pushButtonSave.setStyleSheet("""
+            QPushButton {
+                font-size: 12pt;
+                background-color: #008CBA;
+                color: white;
+                border: 2px solid #008CBA;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #007399; /* Колір при наведенні курсора */
+            }
+        """)
+        # Стилізація інших кнопок з ефектом "hover"
+        self.pushButtonLoad.setStyleSheet("""
+            QPushButton {
+                font-size: 12pt;
+                background-color: #f44336;
+                color: white;
+                border: 2px solid #f44336;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #d32f2f; /* Колір при наведенні курсора */
+            }
+        """)
+        self.pushButtonRemove.setStyleSheet("""
+            QPushButton {
+                font-size: 12pt;
+                background-color: #FF9800;
+                color: white;
+                border: 2px solid #FF9800;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #e68a00; /* Колір при наведенні курсора */
+            }
+        """)
+        self.pushButtonEdit.setStyleSheet("""
+            QPushButton {
+                font-size: 12pt;
+                background-color: #795548;
+                color: white;
+                border: 2px solid #795548;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #5d4037; /* Колір при наведенні курсора */
+            }
+        """)
+        self.pushButtonShowStatistics.setStyleSheet("""
+            QPushButton {
+                font-size: 12pt;
+                background-color: #9C27B0;
+                color: white;
+                border: 2px solid #9C27B0;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #7b1fa2; /* Колір при наведенні курсора */
+            }
+        """)
+        self.pushButtonSearch.setStyleSheet("""
+            QPushButton {
+                font-size: 12pt;
+                background-color: #607D8B;
+                color: white;
+                border: 2px solid #607D8B;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #455a64; /* Колір при наведенні курсора */
+                color: white; /* Колір тексту при наведенні курсора */
+            }
+        """)
 
-        MainWindow.setStatusBar(self.statusbar)
+        self.lineEditSearch.setStyleSheet("font-size: 12pt; border: 2px solid #ccc; border-radius: 5px;")
+        self.comboBoxSelectionForSearch.setStyleSheet("font-size: 12pt; border: 2px solid #ccc; border-radius: 5px;")
+
+        self.listViewProducts.setStyleSheet(
+            "font-size: 12pt; background-color: #f0f0f0; border: 2px solid #ccc; border-radius: 5px;")
+        self.listViewDish.setStyleSheet(
+            "font-size: 12pt; background-color: #f0f0f0; border: 2px solid #ccc; border-radius: 5px;")
+
+        # Стилізація для форми
+        MainWindow.setStyleSheet("background-color: #f0f0f0;")  # Задає колір фону для головного вікна
+        self.centralwidget.setStyleSheet("background-color: #f0f0f0;")  # Задає колір фону для центрального віджета
+
+
+
+        # Стилізація для тексту на формі
+        self.labelStatistic.setStyleSheet("font-size: 14pt; color: #3366CC; background-color: rgba(255, 255, 255, 0);")
+        self.labelStockProducts.setStyleSheet(
+            "font-size: 14pt; color: #3366CC; background-color: rgba(255, 255, 255, 0);")
 
         self.pushButtonAddItem.clicked.connect(self.add_item)
         self.pushButtonSearch.clicked.connect(self.search_items)
@@ -379,7 +487,17 @@ class Ui_MainWindow(object):
             for _ in range(quantity):
                 dish.add_product(ingredient)
 
+        # Update the quantity of products in the refrigerator
+        for ingredient, quantity in updated_ingredients:
+            if ingredient.quantity >= quantity:
+                ingredient.quantity -= quantity
+            else:
+                QtWidgets.QMessageBox.warning(
+                    self.centralwidget, "Error",
+                    f"Insufficient quantity of {ingredient.name} in the refrigerator.")
+
         self.update_dish_list()
+        self.update_product_list()  # Update the product list as well
         QtWidgets.QMessageBox.information(
             self.centralwidget, "Success", f"Dish '{dish.name}' updated successfully.")
 
