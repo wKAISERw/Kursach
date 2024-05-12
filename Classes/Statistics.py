@@ -1,3 +1,4 @@
+from datetime import datetime
 
 from Classes.Product import Product
 from Classes.Dish import Dish
@@ -19,4 +20,12 @@ class Statistics:
                 low_stock_products.append(f"{food.name} (x{food.quantity})")
 
         return low_stock_products
+
+    def get_expiring_products(self, days=7):
+        expiring_products = []
+        today = datetime.today().date()
+        for food in self._refrigerator._foods:
+            if isinstance(food, Product) and (food.expiration_date - today).days <= days:
+                expiring_products.append(food)
+        return expiring_products
 

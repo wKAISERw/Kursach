@@ -22,7 +22,11 @@ class Ui_MainWindow(object):
         self.refrigerator = Refrigerator()
         self.statistics = Statistics(self.refrigerator)
         self.products_model = QtGui.QStandardItemModel()
+        self.check_expiring_products_timer = QtCore.QTimer()
+        self.check_expiring_products_timer.timeout.connect(self.check_expiring_products)
         self.dishes_model = QtGui.QStandardItemModel()
+        self.check_expiring_products_timer.start(24 * 60 * 60 * 1000)  # Перевірка кожні 24 години
+
         self.selected_product_index = None
         self.selected_dish_index = None
         self.selected_item_for_edit = None
@@ -33,8 +37,6 @@ class Ui_MainWindow(object):
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
-
-
 
         self.listViewProducts = QtWidgets.QListView(self.centralwidget)
         self.listViewProducts.setGeometry(QtCore.QRect(40, 160, 581, 451))
@@ -94,29 +96,27 @@ class Ui_MainWindow(object):
         self.labelStockProducts.setStyleSheet("font-size: 12pt;")
         self.labelStockProducts.setObjectName("labelStockProducts")
 
+        self.pushButtonExpiringProducts = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButtonExpiringProducts.setGeometry(QtCore.QRect(1100, 20, 171, 41))
+        self.pushButtonExpiringProducts.setObjectName("pushButtonExpiringProducts")
+        self.pushButtonExpiringProducts.setText("Expiring Products")
+
+        self.retranslateUi(MainWindow)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         # Стилізація для віджетів додавання, редагування
         self.pushButtonAddItem.setStyleSheet("""
             QPushButton {
-                font-size: 12pt;
-                background-color: #4CAF50;
-                color: white;
-                border: 2px solid #4CAF50;
-                border-radius: 5px;
+                font-size: 12pt; background-color: #4CAF50; color: white; border: 2px solid #4CAF50;border-radius: 5px;
             }
             QPushButton:hover {
-                background-color: #45a049; /* Колір при наведенні курсора */
-            }
+                background-color: #45a049; /* Колір при наведенні курсора */}
         """)
         self.pushButtonSave.setStyleSheet("""
             QPushButton {
-                font-size: 12pt;
-                background-color: #008CBA;
-                color: white;
-                border: 2px solid #008CBA;
-                border-radius: 5px;
+                font-size: 12pt;background-color: #008CBA;color: white; border: 2px solid #008CBA;border-radius: 5px;
             }
             QPushButton:hover {
                 background-color: #007399; /* Колір при наведенні курсора */
@@ -125,11 +125,7 @@ class Ui_MainWindow(object):
         # Стилізація інших кнопок з ефектом "hover"
         self.pushButtonLoad.setStyleSheet("""
             QPushButton {
-                font-size: 12pt;
-                background-color: #f44336;
-                color: white;
-                border: 2px solid #f44336;
-                border-radius: 5px;
+                font-size: 12pt; background-color: #f44336;color: white;border: 2px solid #f44336;border-radius: 5px;
             }
             QPushButton:hover {
                 background-color: #d32f2f; /* Колір при наведенні курсора */
@@ -137,11 +133,7 @@ class Ui_MainWindow(object):
         """)
         self.pushButtonRemove.setStyleSheet("""
             QPushButton {
-                font-size: 12pt;
-                background-color: #FF9800;
-                color: white;
-                border: 2px solid #FF9800;
-                border-radius: 5px;
+                font-size: 12pt;background-color: #FF9800;color: white; border: 2px solid #FF9800;border-radius: 5px;
             }
             QPushButton:hover {
                 background-color: #e68a00; /* Колір при наведенні курсора */
@@ -149,11 +141,7 @@ class Ui_MainWindow(object):
         """)
         self.pushButtonEdit.setStyleSheet("""
             QPushButton {
-                font-size: 12pt;
-                background-color: #795548;
-                color: white;
-                border: 2px solid #795548;
-                border-radius: 5px;
+                font-size: 12pt;background-color: #795548;color: white;border: 2px solid #795548;border-radius: 5px;
             }
             QPushButton:hover {
                 background-color: #5d4037; /* Колір при наведенні курсора */
@@ -161,11 +149,7 @@ class Ui_MainWindow(object):
         """)
         self.pushButtonShowStatistics.setStyleSheet("""
             QPushButton {
-                font-size: 12pt;
-                background-color: #9C27B0;
-                color: white;
-                border: 2px solid #9C27B0;
-                border-radius: 5px;
+                font-size: 12pt;background-color: #9C27B0; color: white;border: 2px solid #9C27B0;border-radius: 5px;
             }
             QPushButton:hover {
                 background-color: #7b1fa2; /* Колір при наведенні курсора */
@@ -173,11 +157,7 @@ class Ui_MainWindow(object):
         """)
         self.pushButtonSearch.setStyleSheet("""
             QPushButton {
-                font-size: 12pt;
-                background-color: #607D8B;
-                color: white;
-                border: 2px solid #607D8B;
-                border-radius: 5px;
+                font-size: 12pt;background-color: #607D8B;color: white;border: 2px solid #607D8B;border-radius: 5px;
             }
             QPushButton:hover {
                 background-color: #455a64; /* Колір при наведенні курсора */
@@ -213,7 +193,7 @@ class Ui_MainWindow(object):
         self.listViewDish.clicked.connect(self.handle_dish_selection)
         self.pushButtonSave.clicked.connect(self.save_data)
         self.pushButtonLoad.clicked.connect(self.load_data)
-
+        self.pushButtonExpiringProducts.clicked.connect(self.show_expiring_products)
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -247,7 +227,36 @@ class Ui_MainWindow(object):
         self.pushButtonShowStatistics.setText(_translate("MainWindow", "Переглянути статистику"))
         self.labelStatistic.setText(_translate("MainWindow", "TextLabel"))
         self.labelStockProducts.setText(_translate("MainWindow", "TextLabel"))
+        self.pushButtonExpiringProducts.setText(_translate("MainWindow", "Expiring Products"))
 
+    def show_expiring_products(self):
+        expiring_products = self.statistics.get_expiring_products(days=7)
+        if expiring_products:
+            self.show_expiring_products_dialog(expiring_products)
+
+    def show_expiring_products_dialog(self, expiring_products):
+        dialog = QtWidgets.QDialog()
+        dialog.setWindowTitle("Expiring Products")
+        layout = QtWidgets.QVBoxLayout()
+
+        label = QtWidgets.QLabel("The following products will expire soon:")
+        layout.addWidget(label)
+
+        list_widget = QtWidgets.QListWidget()
+        for product in expiring_products:
+            list_widget.addItem(f"{product.name} - Expires on {product.expiration_date.strftime('%Y-%m-%d')}")
+
+        layout.addWidget(list_widget)
+
+        dialog.setLayout(layout)
+        dialog.exec_()
+
+    def check_expiring_products(self):
+        # Метод для перевірки та відстеження продуктів, термін придатності яких закінчується
+        expiring_products = self.statistics.get_expiring_products(days=1)  # Перевірка наступного дня
+        if expiring_products:
+            # Тут можна викликати певний метод або відобразити повідомлення користувачу
+            print("Expiring products:", expiring_products)
     def add_item(self):
         item_type, ok = QtWidgets.QInputDialog.getItem(
             self.centralwidget, "Add Item", "Select item type:", ("Product", "Dish"), 0, False)
@@ -559,7 +568,8 @@ class Ui_MainWindow(object):
                         item = QtGui.QStandardItem(food.name)
                         self.dishes_model.appendRow(item)
         except Exception as e:
-            QtWidgets.QMessageBox.critical(self.centralwidget, "Помилка", f"Виникла помилка: {str(e)}")
+            QtWidgets.QMessageBox.critical(self.centralwidget, "Помилка", f"Виникла помилка: {str(e)}")\
+
 
     def pushButtonShowStatistics_clicked(self):
         total_foods = len(self.refrigerator._foods)
