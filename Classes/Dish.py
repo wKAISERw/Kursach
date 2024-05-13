@@ -12,7 +12,6 @@ class Dish(Food):
 
     def add_product(self, product):
         self._products.append(product)
-        product.quantity -= 1
 
     def remove_product(self, product):
         self._products.remove(product)

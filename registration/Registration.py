@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import mysql.connector
-
+from Login import Ui_Dialog
 # Existing code...
 
 class Ui_RegistrationDialog(object):
@@ -37,7 +37,12 @@ class Ui_RegistrationDialog(object):
         self.pushButtonRegistration.setGeometry(QtCore.QRect(180, 410, 161, 41))
         self.pushButtonRegistration.setStyleSheet("font-size:16pt;")
         self.pushButtonRegistration.setObjectName("pushButtonRegistration")
-
+        self.pushButtonBack = QtWidgets.QPushButton(Dialog)
+        self.pushButtonBack.setGeometry(QtCore.QRect(50, 410, 121, 41))
+        self.pushButtonBack.setStyleSheet("font-size:16pt;")
+        self.pushButtonBack.setObjectName("pushButtonBack")
+        self.pushButtonBack.setText("Back")
+        self.pushButtonBack.clicked.connect(lambda: self.go_back(Dialog))
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
         self.pushButtonRegistration.clicked.connect(self.register)
@@ -73,6 +78,14 @@ class Ui_RegistrationDialog(object):
         self.RegistrationLabelEmail.setText(_translate("Dialog", "Email"))
         self.RegistrationLabelPassword.setText(_translate("Dialog", "Password"))
         self.pushButtonRegistration.setText(_translate("Dialog", "Створити"))
+        self.pushButtonBack.setText(_translate("Dialog", "Back"))
+
+    def go_back(self, Dialog):
+        self.login_dialog = QtWidgets.QDialog()
+        self.ui_login = Ui_Dialog()
+        self.ui_login.setupUi(self.login_dialog)
+        Dialog.close()
+        self.login_dialog.show()
 
 
 if __name__ == "__main__":

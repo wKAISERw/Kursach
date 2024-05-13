@@ -6,6 +6,7 @@ class Product(Food):
         super().__init__(name)
         self._quantity = quantity
         self._expiration_date = expiration_date
+        self.usage_count = 0
 
     def __str__(self):
         return f"{self.name} (x{self.quantity})"

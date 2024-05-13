@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, date
 from Classes.Refrigerator import Refrigerator
 from Classes.Product import Product
 from Classes.Dish import Dish
@@ -10,7 +10,7 @@ class Serializer:
         return {
             "name": product.name,
             "quantity": product.quantity,
-            "expiration_date": product.expiration_date.isoformat()
+            "expiration_date": product.expiration_date.strftime("%Y-%m-%d")  # Перетворюємо дату в строку
         }
 
     @staticmethod
@@ -25,10 +25,9 @@ class Serializer:
         return Product(
             product_data["name"],
             product_data["quantity"],
-            datetime.fromisoformat(product_data["expiration_date"])
+            datetime.strptime(product_data["expiration_date"], "%Y-%m-%d")  # Парсимо строку у дату
         )
 
-    @staticmethod
     @staticmethod
     def deserialize_dish(dish_data, refrigerator):
         dish = Dish(dish_data["name"])
@@ -45,6 +44,7 @@ class Serializer:
                 if ingredient:
                     dish.add_product(ingredient)
         return dish
+
     @staticmethod
     def save_data(refrigerator, filename):
         data = {

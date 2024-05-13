@@ -295,7 +295,7 @@ class Ui_MainWindow(object):
 
                     quantity_label = QtWidgets.QLabel("Quantity:")
                     quantity_input = QtWidgets.QSpinBox()
-                    quantity_input.setMinimum(1)
+                    quantity_input.setMinimum(0)
                     quantity_input.setMaximum(ingredient.quantity)
                     ingredient_layout.addWidget(quantity_label)
                     ingredient_layout.addWidget(quantity_input)
@@ -320,18 +320,23 @@ class Ui_MainWindow(object):
             for ingredient, quantity in selected_ingredients:
                 for _ in range(quantity):
                     new_dish.add_product(ingredient)
+                    ingredient.quantity -= 1
+                    ingredient.usage_count += 1  # Збільшуємо usage_count
 
             self.refrigerator.add_food(new_dish)
             self.update_dish_list()
 
             for ingredient, quantity in selected_ingredients:
-                ingredient.quantity -= quantity
-                if ingredient.quantity == 0:
+                if ingredient.quantity < 0:
+                    ingredient.quantity = 0
                     self.refrigerator.remove_food(ingredient)
             self.update_product_list()
 
+            ingredients_info = ", ".join(
+                [f"{ingredient.name} (x{quantity})" for ingredient, quantity in selected_ingredients])
             QtWidgets.QMessageBox.information(
-                self.centralwidget, "Success", f"{dish_name} added to the refrigerator.")
+                self.centralwidget, "Success",
+                f"{dish_name} added to the refrigerator.\nIngredients: {ingredients_info}")
         else:
             QtWidgets.QMessageBox.warning(
                 self.centralwidget, "Warning", "You need to select at least one ingredient to create a dish.")
