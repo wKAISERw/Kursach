@@ -103,6 +103,7 @@ class Ui_MainWindow(object):
 
 
 
+
         self.retranslateUi(MainWindow)
 
         MainWindow.setCentralWidget(self.centralwidget)
@@ -361,6 +362,7 @@ class Ui_MainWindow(object):
                         if expiration_date < datetime.now().date():
                             QtWidgets.QMessageBox.warning(self.centralwidget, "Error",
                                                           "Product expiration date has already passed. Product cannot be added.")
+                            return
                         else:
                             new_product = Product(product_name, product_quantity, expiration_date)
                             self.refrigerator.add_food(new_product)
@@ -369,9 +371,8 @@ class Ui_MainWindow(object):
                                                               f"{product_name} added to the refrigerator.")
 
                             # Create an instance of Statistics and use it to add the action
-                            statistics = Statistics(self.refrigerator)
-                            statistics.add_action(
-                                f"Added product '{new_product.name}' with quantity {new_product.quantity} and expiration date {new_product.expiration_date.strftime('%Y-%m-%d')}")
+                        self.statistics.add_action(
+                            f"Added product '{new_product.name}' with quantity {new_product.quantity} and expiration date {new_product.expiration_date.strftime('%Y-%m-%d')}")
                     except ValueError:
                         QtWidgets.QMessageBox.warning(self.centralwidget, "Error", "Invalid expiration date format.")
 
@@ -654,6 +655,7 @@ class Ui_MainWindow(object):
 
         history_dialog.setLayout(layout)
         history_dialog.exec_()
+
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
