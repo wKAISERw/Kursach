@@ -6,13 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="876da0dd-4710-404d-aec0-fc3e8dec9e75" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Classes/Dish.py" beforeDir="false" afterPath="$PROJECT_DIR$/Classes/Dish.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Classes/Product.py" beforeDir="false" afterPath="$PROJECT_DIR$/Classes/Product.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Classes/Statistics.py" beforeDir="false" afterPath="$PROJECT_DIR$/Classes/Statistics.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Serializer/Serializer.py" beforeDir="false" afterPath="$PROJECT_DIR$/Serializer/Serializer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mainProgram/MainProgram.py" beforeDir="false" afterPath="$PROJECT_DIR$/mainProgram/MainProgram.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/registration/Login.py" beforeDir="false" afterPath="$PROJECT_DIR$/registration/Login.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/registration/Registration.py" beforeDir="false" afterPath="$PROJECT_DIR$/registration/Registration.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,7 +43,7 @@
     "Python.StatisticsDialog (1).executor": "Run",
     "Python.StatisticsDialog.executor": "Run",
     "Python.main.executor": "Run",
-    "Python.test.executor": "Run",
+    "Python.test.executor": "Debug",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
@@ -62,7 +58,7 @@
       <recent name="C:\Users\User\PycharmProjects\smartFridge\registration" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.Login">
+  <component name="RunManager" selected="Python.MainProgram">
     <configuration name="Login" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="smartFridge" />
       <option name="ENV_FILES" value="" />
@@ -197,10 +193,10 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.Login" />
-        <item itemvalue="Python.Registration" />
         <item itemvalue="Python.MainProgram" />
         <item itemvalue="Python.test" />
+        <item itemvalue="Python.Login" />
+        <item itemvalue="Python.Registration" />
         <item itemvalue="Python.StatisticsDialog (1)" />
       </list>
     </recent_temporary>

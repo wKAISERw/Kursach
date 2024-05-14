@@ -6,7 +6,7 @@ from Classes.Dish import Dish
 class Statistics:
     def __init__(self, refrigerator):
         self._refrigerator = refrigerator
-
+        self.actions = []
     def get_total_counts(self):
         total_foods = len(self._refrigerator._foods)
         total_products = len([food for food in self._refrigerator._foods if isinstance(food, Product)])
@@ -32,3 +32,10 @@ class Statistics:
                     expiring_products.append(food)
         return expiring_products
 
+    def add_action(self, action_text):
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        action = f"{timestamp} - {action_text}"
+        self.actions.append(action)
+
+    def get_actions(self):
+        return self.actions

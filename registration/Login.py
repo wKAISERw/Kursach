@@ -67,7 +67,13 @@ class Ui_Dialog(object):
             database="AuthorizationDB"
         )
         self.cursor = self.db_connection.cursor()
-
+    def open_main_window(self):
+        self.main_window = QtWidgets.QMainWindow()
+        self.ui_main_window = Ui_MainWindow()
+        self.ui_main_window.setupUi(self.main_window)
+        self.main_window.show()
+        # Close the current login dialog
+        Dialog.close()
     def open_registration_dialog(self, Dialog):
         self.dialog = QtWidgets.QDialog()
         self.ui = Registration.Ui_RegistrationDialog()
@@ -99,13 +105,7 @@ class Ui_Dialog(object):
 
 
 
-    def open_main_window(self):
-        self.main_window = QtWidgets.QMainWindow()
-        self.ui_main_window = Ui_MainWindow()
-        self.ui_main_window.setupUi(self.main_window)
-        self.main_window.show()
-        # Close the current login dialog
-        Dialog.close()
+
 import Registration
 if __name__ == "__main__":
     import sys
